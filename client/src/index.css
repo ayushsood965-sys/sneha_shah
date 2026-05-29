@@ -2320,3 +2320,257 @@ section {
     }
 }
 
+/* ==========================================================================
+   HIGH-FIDELITY MOBILE RESPONSIVE OVERRIDES
+   ========================================================================== */
+
+/* 1. Global Navigation & Layout */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 16px;
+    }
+    
+    section {
+        padding: 80px 0; /* Balanced spacing on mobile */
+    }
+}
+
+/* Hero Section Order Override for Mobile (Image first, then Text) */
+@media (max-width: 991px) {
+    .hero-visual {
+        order: 1;
+    }
+    
+    .hero-content {
+        order: 2;
+    }
+}
+
+/* 2. Hero & Counselor Portrait Responsiveness */
+@media (max-width: 576px) {
+    .morph-blob {
+        width: 240px;
+        height: 240px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+    
+    .about-morph-blob {
+        width: 220px;
+        height: 220px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+    }
+    
+    /* Ensure scaled floating photos do not bleed off-screen on narrow phones */
+    .hero-visual, .about-visual {
+        padding: 20px;
+        overflow: visible;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 360px) {
+    .morph-blob {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .about-morph-blob {
+        width: 180px;
+        height: 180px;
+    }
+}
+
+/* 3. Destination Scenic Cards Responsiveness */
+@media (max-width: 640px) {
+    .destinations-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+        padding: 0 8px;
+    }
+    
+    .destination-card {
+        border-radius: var(--radius-md);
+    }
+}
+
+/* 4. Booking Calendar & Discovery Scheduler Mobile Polishing */
+@media (max-width: 600px) {
+    .contact-widget-card {
+        padding: 24px 16px !important;
+        border-radius: var(--radius-md);
+    }
+    
+    .calendar-container {
+        padding: 12px !important;
+    }
+    
+    .calendar-grid-header span {
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+    
+    .calendar-day {
+        font-size: 0.78rem;
+    }
+    
+    .time-slots-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px;
+    }
+    
+    .time-slot {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+    }
+    
+    .booking-inputs-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .calendar-navigation h3 {
+        font-size: 0.95rem;
+    }
+    
+    .time-slots-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* 5. Admin Login Modal Overlay Responsiveness */
+@media (max-width: 480px) {
+    .admin-login-overlay {
+        padding: 16px;
+    }
+    
+    .admin-login-card {
+        padding: 28px 20px;
+        border-radius: var(--radius-md);
+        gap: 16px;
+    }
+    
+    .admin-login-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .admin-login-card p {
+        font-size: 0.8rem;
+        margin-top: -8px;
+    }
+}
+
+/* 6. Counselor Console Dashboard Responsiveness */
+@media (max-width: 768px) {
+    .admin-dashboard-container {
+        padding: 0 12px;
+        margin: 20px auto 0 auto;
+    }
+    
+    .admin-workspace {
+        padding: 20px 15px;
+        border-radius: var(--radius-md);
+        min-height: auto;
+    }
+    
+    .workspace-title-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .workspace-title-bar h3 {
+        font-size: 1.15rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .admin-header {
+        padding: 16px 20px;
+        border-radius: var(--radius-md);
+        gap: 16px;
+    }
+    
+    .admin-logo-group h2 {
+        font-size: 1.1rem;
+    }
+    
+    .admin-logo-group .logo-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .admin-tabs-nav {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-bottom: 12px;
+    }
+    
+    .admin-tab-btn {
+        font-size: 0.8rem;
+        padding: 6px 14px;
+        flex: 1;
+        text-align: center;
+    }
+    
+    .metric-panel {
+        padding: 16px 20px;
+        border-radius: var(--radius-md);
+    }
+    
+    .metric-icon-slot {
+        width: 44px;
+        height: 44px;
+        font-size: 1.3rem;
+    }
+    
+    .metric-value {
+        font-size: 1.5rem;
+    }
+    
+    /* Responsive High-Density Scrollable Tables styling */
+    .admin-table-container {
+        border-radius: var(--radius-sm);
+        /* Subtle indicator that table can be swiped horizontally */
+        box-shadow: inset -10px 0 10px rgba(0, 0, 0, 0.02);
+    }
+    
+    /* Ensure scrollbar remains visual and easy to scroll */
+    .admin-table-container::-webkit-scrollbar {
+        height: 5px;
+    }
+    
+    .admin-table-container::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .admin-table-container::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.3);
+        border-radius: 10px;
+    }
+    
+    .admin-table th {
+        padding: 12px 14px;
+        font-size: 0.72rem;
+    }
+    
+    .admin-table td {
+        padding: 12px 14px;
+        font-size: 0.82rem;
+    }
+    
+    /* Fix table widths on small displays so columns expand naturally */
+    .admin-table th:nth-child(1), .admin-table td:nth-child(1) { min-width: 130px; } /* Details */
+    .admin-table th:nth-child(2), .admin-table td:nth-child(2) { min-width: 160px; } /* Contact info */
+    .admin-table th:nth-child(3), .admin-table td:nth-child(3) { min-width: 130px; } /* Area tags */
+    .admin-table th:nth-child(4), .admin-table td:nth-child(4) { min-width: 240px; } /* Message content */
+    .admin-table th:nth-child(5), .admin-table td:nth-child(5) { min-width: 90px; }  /* Button Actions */
+}
+
+
