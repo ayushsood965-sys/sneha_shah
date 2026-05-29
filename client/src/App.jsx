@@ -619,42 +619,46 @@ export default function App() {
 
         {/* Trust bar */}
         <div className="trust-bar">
-          <div className="trust-bar-label">Trust bar:</div>
+          <div className="trust-bar-label">3,000+ Students Guided & Opportunities Provided in:</div>
           <div className="trust-ticker-container">
             <div className="trust-ticker">
-              <span className="ticker-item">3,000+ Students Guided</span>
+              <span className="ticker-item">🇺🇸 United States</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">USA</span>
+              <span className="ticker-item">🇨🇦 Canada</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">Canada</span>
+              <span className="ticker-item">🇦🇺 Australia</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">Australia</span>
+              <span className="ticker-item">🇬🇧 United Kingdom</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">UK</span>
+              <span className="ticker-item">🇸🇬 Singapore</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">Singapore</span>
+              <span className="ticker-item">🇳🇱 Netherlands</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">Netherlands</span>
+              <span className="ticker-item">🇩🇪 Germany</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">and more</span>
+              <span className="ticker-item">🇮🇪 Ireland</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">🇳🇿 New Zealand</span>
               
               {/* Infinite scrolling duplication */}
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">3,000+ Students Guided</span>
+              <span className="ticker-item">🇺🇸 United States</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">USA</span>
+              <span className="ticker-item">🇨🇦 Canada</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">Canada</span>
+              <span className="ticker-item">🇦🇺 Australia</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">Australia</span>
+              <span className="ticker-item">🇬🇧 United Kingdom</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">UK</span>
+              <span className="ticker-item">🇸🇬 Singapore</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">Singapore</span>
+              <span className="ticker-item">🇳🇱 Netherlands</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">Netherlands</span>
+              <span className="ticker-item">🇩🇪 Germany</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">and more</span>
+              <span className="ticker-item">🇮🇪 Ireland</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">🇳🇿 New Zealand</span>
             </div>
           </div>
         </div>

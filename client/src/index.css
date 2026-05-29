@@ -529,27 +529,30 @@ p {
 
 /* Trust Bar Ticker */
 .trust-bar {
-    border-top: 1px solid var(--border-light);
-    border-bottom: 1px solid var(--border-light);
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    padding: 18px 0;
+    border-top: 1px solid rgba(168, 85, 247, 0.12);
+    border-bottom: 1px solid rgba(168, 85, 247, 0.12);
+    background: rgba(168, 85, 247, 0.02);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 16px 0;
     margin-top: 60px;
     display: flex;
     align-items: center;
     overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.01);
 }
 
 .trust-bar-label {
     flex-shrink: 0;
     padding-left: 24px;
-    font-weight: 600;
+    font-weight: 800;
     font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted);
-    border-right: 1px solid var(--border-light);
+    letter-spacing: 0.06em;
+    background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    border-right: 1px solid rgba(168, 85, 247, 0.15);
     padding-right: 20px;
     margin-right: 20px;
     z-index: 2;
@@ -565,18 +568,35 @@ p {
 .trust-ticker {
     display: inline-flex;
     align-items: center;
-    gap: 24px;
+    gap: 16px;
     animation: ticker 35s linear infinite;
 }
 
 .ticker-item {
-    font-size: 0.95rem;
+    font-size: 0.86rem;
+    font-weight: 700;
     color: var(--text-secondary);
+    background: rgba(168, 85, 247, 0.05);
+    border: 1px solid rgba(168, 85, 247, 0.12);
+    padding: 5px 14px;
+    border-radius: 100px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+}
+
+.ticker-item:hover {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgba(168, 85, 247, 0.25);
+    color: var(--accent-hover);
+    transform: translateY(-1px);
 }
 
 .ticker-dot {
-    color: var(--primary);
-    opacity: 0.5;
+    color: #a855f7;
+    opacity: 0.7;
+    font-size: 1.2rem;
 }
 
 @keyframes ticker {
@@ -2346,6 +2366,29 @@ section {
         width: 100vw;
         max-width: 100vw;
         overflow: hidden;
+    }
+    
+    /* Responsive Trust Bar Layout Stacking */
+    .trust-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px 20px !important;
+    }
+    
+    .trust-bar-label {
+        border-right: none !important;
+        padding-right: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        font-size: 0.76rem !important;
+        line-height: 1.4;
+        width: 100%;
+        letter-spacing: 0.03em;
+    }
+    
+    .trust-ticker-container {
+        width: 100%;
     }
 }
 
