@@ -1068,9 +1068,9 @@ export default function App() {
               </div>
 
               <div className="social-links">
-                <a href="mailto:sneha@edvantageuni.com" className="social-link-item glass">
+                <a href="mailto:info@edvantageuni.com" className="social-link-item glass">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                  <span>sneha@edvantageuni.com</span>
+                  <span>info@edvantageuni.com</span>
                 </a>
               </div>
             </div>
@@ -1337,7 +1337,7 @@ export default function App() {
           <div className="footer-links-group">
             <h4>Contact Info</h4>
             <p>📍 Based in Australia (immigrated 2024)</p>
-            <p>📧 <a href="mailto:sneha@edvantageuni.com" style={{ color: '#94a3b8', textDecoration: 'none' }}>sneha@edvantageuni.com</a></p>
+            <p>📧 <a href="mailto:info@edvantageuni.com" style={{ color: '#94a3b8', textDecoration: 'none' }}>info@edvantageuni.com</a></p>
             <p>🕒 Mon - Sat: 9 AM - 6 PM (AEST)</p>
           </div>
         </div>
