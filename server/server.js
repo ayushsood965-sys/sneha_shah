@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
     origin: '*', // Dynamic and easy development
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type']
 }));
 app.use(express.json());
@@ -136,6 +136,101 @@ app.get('/api/bookings/busy', async (req, res) => {
     } catch (err) {
         console.error("Error fetching busy slots:", err);
         res.status(500).json({ error: "Failed to fetch busy slots" });
+    }
+});
+
+// --- ADMIN SYSTEM ROUTES ---
+
+// Admin Login validation
+app.post('/api/admin/login', (req, res) => {
+    const { username, password } = req.body;
+    if (username === 'admin' && password === 'admin') {
+        return res.json({ success: true, token: "edvantage_uni_mock_jwt_token_2026" });
+    }
+    return res.status(401).json({ error: "Invalid username or password" });
+});
+
+// Fetch all inquiries
+app.get('/api/admin/inquiries', async (req, res) => {
+    try {
+        if (isDbConnected) {
+            const inquiries = await Inquiry.find().sort({ createdAt: -1 });
+            return res.json({ inquiries });
+        } else {
+            return res.json({ inquiries: [...memoryInquiries].reverse() });
+        }
+    } catch (err) {
+        console.error("Error retrieving inquiries:", err);
+        res.status(500).json({ error: "Failed to retrieve student inquiries" });
+    }
+});
+
+// Archive (Delete) an inquiry
+app.delete('/api/admin/inquiries/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (isDbConnected) {
+            const deleted = await Inquiry.findByIdAndDelete(id);
+            if (!deleted) {
+                return res.status(404).json({ error: "Inquiry not found" });
+            }
+            return res.json({ message: "Inquiry archived successfully" });
+        } else {
+            const index = memoryInquiries.findIndex(i => i._id === id);
+            if (index === -1) {
+                return res.status(404).json({ error: "Inquiry not found in memory" });
+            }
+            memoryInquiries.splice(index, 1);
+            return res.json({ message: "Inquiry archived successfully from memory" });
+        }
+    } catch (err) {
+        console.error("Error deleting inquiry:", err);
+        res.status(500).json({ error: "Failed to archive inquiry record" });
+    }
+});
+
+// Fetch all scheduled bookings
+app.get('/api/admin/bookings', async (req, res) => {
+    try {
+        if (isDbConnected) {
+            const bookings = await Booking.find().sort({ date: 1, timeSlot: 1 });
+            return res.json({ bookings });
+        } else {
+            // Sort by date then slot
+            const sorted = [...memoryBookings].sort((a, b) => {
+                const dateCompare = a.date.localeCompare(b.date);
+                if (dateCompare !== 0) return dateCompare;
+                return a.timeSlot.localeCompare(b.timeSlot);
+            });
+            return res.json({ bookings: sorted });
+        }
+    } catch (err) {
+        console.error("Error retrieving bookings:", err);
+        res.status(500).json({ error: "Failed to retrieve discovery bookings" });
+    }
+});
+
+// Archive (Delete) a booking slot
+app.delete('/api/admin/bookings/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (isDbConnected) {
+            const deleted = await Booking.findByIdAndDelete(id);
+            if (!deleted) {
+                return res.status(404).json({ error: "Booking record not found" });
+            }
+            return res.json({ message: "Booking archived successfully" });
+        } else {
+            const index = memoryBookings.findIndex(b => b._id === id);
+            if (index === -1) {
+                return res.status(404).json({ error: "Booking not found in memory" });
+            }
+            memoryBookings.splice(index, 1);
+            return res.json({ message: "Booking archived successfully from memory" });
+        }
+    } catch (err) {
+        console.error("Error deleting booking:", err);
+        res.status(500).json({ error: "Failed to archive booking record" });
     }
 });
 
