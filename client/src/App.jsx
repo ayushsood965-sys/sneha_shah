@@ -338,10 +338,6 @@ export default function App() {
             </div>
             
             <div className="admin-controls">
-              <div className="db-status-badge">
-                <span className={`status-glow-dot ${dbConnected ? 'active' : 'fallback'}`}></span>
-                <span>Database: {dbConnected ? 'MongoDB Connected' : 'In-Memory Fallback'}</span>
-              </div>
               <button className="btn-admin-logout" onClick={handleAdminLogout}>
                 Log Out
               </button>
