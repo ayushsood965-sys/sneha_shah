@@ -729,7 +729,6 @@ export default function App() {
             </div>
 
             <div className="about-content">
-              <div className="hero-badge">Meet Your Counselor</div>
               <h2 className="section-title">Meet Your Counselor</h2>
               <div className="bio-text">
                 <p>Hi, I'm Sneha Shah - founder of EdVantage Uni and your dedicated study abroad partner.</p>
@@ -796,7 +795,6 @@ export default function App() {
       <section id="services" className="services-section">
         <div className="section-container">
           <div className="section-header">
-            <div className="hero-badge m-auto">What We Offer</div>
             <h2 className="section-title text-center">What We Offer</h2>
             <div className="section-divider"></div>
             <p className="section-description text-center">
@@ -923,7 +921,6 @@ export default function App() {
       <section id="destinations" className="destinations-section">
         <div className="section-container">
           <div className="section-header">
-            <div className="hero-badge m-auto">Where Can We Send You?</div>
             <h2 className="section-title text-center">Where Can We Send You?</h2>
             <div className="section-divider"></div>
           </div>
@@ -1040,7 +1037,6 @@ export default function App() {
         <div className="section-container">
           <div className="contact-layout">
             <div className="contact-info">
-              <div className="hero-badge">Let's Connect</div>
               <h2>Let's Talk About Your Future</h2>
               <p className="contact-subtitle">
                 Fill in the form below and we'll be in touch within 24 hours. 
