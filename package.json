@@ -1,0 +1,14 @@
+{
+  "name": "edvantage-uni",
+  "version": "1.0.0",
+  "description": "EdVantage Uni - Sneha Shah MERN Website",
+  "scripts": {
+    "install-all": "npm install --prefix client && npm install --prefix server",
+    "server": "npm start --prefix server",
+    "client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

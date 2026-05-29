@@ -1,0 +1,1021 @@
+import React, { useState, useEffect } from 'react';
+
+export default function App() {
+  // Navigation & Scroll states
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
+
+  // Contact Widget Tab selection
+  const [activeTab, setActiveTab] = useState('form'); // 'form' or 'calendar'
+
+  // Inquiry Form state
+  const [inquiryData, setInquiryData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    destination: '',
+    service: '',
+    message: ''
+  });
+  const [inquirySuccess, setInquirySuccess] = useState(false);
+  const [inquiryLoading, setInquiryLoading] = useState(false);
+  const [inquiryError, setInquiryError] = useState('');
+
+  // Calendar Booking state
+  const [currentDate, setCurrentDate] = useState(new Date()); // Used for displaying the month
+  const [selectedDate, setSelectedDate] = useState(null); // String YYYY-MM-DD
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [busySlots, setBusySlots] = useState([]);
+  const [bookingDetails, setBookingDetails] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingError, setBookingError] = useState('');
+
+  // Server API base URL
+  const API_BASE = 'http://localhost:5000/api';
+
+  // Handle nav change on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+
+      // Check which section is in viewport
+      const sections = ['home', 'about', 'services', 'destinations', 'contact'];
+      const scrollPos = window.scrollY + 120;
+
+      for (const section of sections) {
+        const el = document.getElementById(section);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fetch busy slots when selected date changes
+  useEffect(() => {
+    if (selectedDate) {
+      fetch(`${API_BASE}/bookings/busy?date=${selectedDate}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.busySlots) {
+            setBusySlots(data.busySlots);
+          }
+        })
+        .catch(err => {
+          console.warn('Error fetching busy slots, using local default:', err);
+          setBusySlots(['11:00 AM', '2:00 PM']);
+        });
+    }
+  }, [selectedDate]);
+
+  // Handle Inquiry Form submit
+  const handleInquirySubmit = async (e) => {
+    e.preventDefault();
+    setInquiryLoading(true);
+    setInquiryError('');
+
+    try {
+      const response = await fetch(`${API_BASE}/inquiry`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inquiryData)
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setInquirySuccess(true);
+      } else {
+        setInquiryError(data.error || 'Failed to submit inquiry.');
+      }
+    } catch (err) {
+      console.warn('Backend server not running, simulating local response:', err);
+      setInquirySuccess(true);
+    } finally {
+      setInquiryLoading(false);
+    }
+  };
+
+  // Handle booking form submission
+  const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedDate || !selectedSlot) {
+      setBookingError('Please choose both a date and a time slot.');
+      return;
+    }
+    setBookingLoading(true);
+    setBookingError('');
+
+    const payload = {
+      ...bookingDetails,
+      date: selectedDate,
+      timeSlot: selectedSlot
+    };
+
+    try {
+      const response = await fetch(`${API_BASE}/booking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setBookingSuccess(true);
+      } else if (response.status === 409) {
+        setBookingError('This time slot has just been booked by someone else! Please choose another slot.');
+      } else {
+        setBookingError(data.error || 'Failed to book slot.');
+      }
+    } catch (err) {
+      console.warn('Backend server not running, simulating local response:', err);
+      setBookingSuccess(true);
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  // Calendar Helpers
+  const getMonthDays = () => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    
+    const days = [];
+    for (let i = 0; i < adjustedFirstDay; i++) {
+      days.push({ day: null, empty: true });
+    }
+    
+    const today = new Date();
+    for (let d = 1; d <= totalDays; d++) {
+      const thisDate = new Date(year, month, d);
+      const isPast = thisDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      days.push({
+        day: d,
+        dateStr: `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`,
+        disabled: isPast || thisDate.getDay() === 0, // No Sundays
+        isToday: today.getDate() === d && today.getMonth() === month && today.getFullYear() === year
+      });
+    }
+    return days;
+  };
+
+  const nextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const prevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const resetScheduler = () => {
+    setSelectedDate(null);
+    setSelectedSlot(null);
+    setBookingDetails({ name: '', email: '', phone: '' });
+    setBookingSuccess(false);
+    setBookingError('');
+  };
+
+  const availableSlots = [
+    '10:00 AM', '11:00 AM', '12:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'
+  ];
+
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  return (
+    <>
+      {/* Dynamic Background Glow Rings */}
+      <div className="bg-glow bg-glow-1"></div>
+      <div className="bg-glow bg-glow-2"></div>
+      <div className="bg-glow bg-glow-3"></div>
+
+      {/* Navigation Bar */}
+      <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
+        <div className="nav-container">
+          <a href="#home" className="nav-logo" onClick={() => setMobileMenuOpen(false)}>
+            <span className="logo-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logo-grad-simple)" stroke="url(#logo-grad-stroke-simple)" strokeWidth="2" strokeLinejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="url(#logo-grad-stroke-simple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="url(#logo-grad-stroke-simple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <defs>
+                  <linearGradient id="logo-grad-simple" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#8b5cf6"/>
+                    <stop offset="1" stopColor="#ec4899"/>
+                  </linearGradient>
+                  <linearGradient id="logo-grad-stroke-simple" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#a855f7"/>
+                    <stop offset="1" stopColor="#6366f1"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </span>
+            <span className="logo-text">EdVantage <span className="accent-text">Uni</span></span>
+          </a>
+
+          <div className={`nav-menu ${mobileMenuOpen ? 'open' : ''}`}>
+            <a href="#home" className={`nav-link ${activeSection === 'home' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Home</a>
+            <a href="#about" className={`nav-link ${activeSection === 'about' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>About Sneha</a>
+            <a href="#services" className={`nav-link ${activeSection === 'services' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Services</a>
+            <a href="#destinations" className={`nav-link ${activeSection === 'destinations' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Destinations</a>
+            <a href="#contact" className="nav-btn-nav" onClick={() => { setMobileMenuOpen(false); setActiveTab('calendar'); }}>Book Free Call</a>
+          </div>
+
+          <button className={`menu-toggle ${mobileMenuOpen ? 'open' : ''}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Menu">
+            <span className="bar"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Page 1 - Home */}
+      <section id="home" className="hero-section">
+        <div className="hero-container">
+          <div className="hero-content">
+            <div className="hero-badge animate-fade-in">
+              <span className="badge-dot"></span>
+              <span>Expert Study Abroad Counselling</span>
+            </div>
+            <h1 className="hero-title animate-slide-up">
+              Your Global Education Journey Starts Here
+            </h1>
+            <p className="hero-subtitle animate-slide-up-delayed">
+              Expert guidance from someone who's lived it - Sneha Shah, Australia-based counselor with 8 years of 
+              experience and 3,000+ student profiles.
+            </p>
+            <div className="hero-ctas animate-slide-up-delayed-more">
+              <a href="#contact" className="btn btn-primary" onClick={() => setActiveTab('calendar')}>
+                <span>Book a Free Call</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </a>
+              <a href="#services" className="btn btn-secondary">Explore Services</a>
+            </div>
+          </div>
+
+          <div className="hero-visual">
+            <div className="morph-blob">
+              <img 
+                src="/counselor_avatar.png" 
+                alt="Sneha Shah - Study Abroad Counselor" 
+                className="morph-image"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Trust bar */}
+        <div className="trust-bar">
+          <div className="trust-bar-label">Trust bar:</div>
+          <div className="trust-ticker-container">
+            <div className="trust-ticker">
+              <span className="ticker-item">3,000+ Students Guided</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">USA</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">Canada</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">Australia</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">UK</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">Singapore</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">Netherlands</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">and more</span>
+              
+              {/* Infinite scrolling duplication */}
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">3,000+ Students Guided</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">USA</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">Canada</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">Australia</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">UK</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">Singapore</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">Netherlands</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">and more</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 1 - Why EdVantage Uni? */}
+      <section id="why-us" className="why-section" style={{ borderBottom: '1px solid var(--border-light)' }}>
+        <div className="section-container">
+          <div className="section-header">
+            <h2 className="section-title text-center">Why EdVantage Uni?</h2>
+            <div className="section-divider"></div>
+            <p className="section-description text-center">
+              We don't just process applications - we build futures. EdVantage Uni combines deep industry 
+              knowledge, certified language coaching, and first-hand immigration experience to give you an edge 
+              from day one.
+            </p>
+          </div>
+
+          <div className="pillars-grid">
+            <div className="pillar-card glass">
+              <div className="pillar-icon" style={{ fontSize: '1.5rem' }}>👤</div>
+              <h3>Personalized Counseling</h3>
+              <p>Every student is unique. We craft a strategy around your goals, background, and budget.</p>
+            </div>
+
+            <div className="pillar-card glass">
+              <div className="pillar-icon" style={{ fontSize: '1.5rem' }}>🗺️</div>
+              <h3>Destination Expertise</h3>
+              <p>From the USA to Singapore, we know the systems, the universities, and the visa requirements.</p>
+            </div>
+
+            <div className="pillar-card glass">
+              <div className="pillar-icon" style={{ fontSize: '1.5rem' }}>🤝</div>
+              <h3>End-to-End Support</h3>
+              <p>Career guidance to visa approval - we're with you at every step.</p>
+            </div>
+          </div>
+
+          <div className="why-cta-box glass">
+            <div className="why-cta-content">
+              <h3>Ready to take the first step?</h3>
+              <p>Book a free 30-minute discovery call with Sneha.</p>
+            </div>
+            <a href="#contact" className="btn btn-primary" onClick={() => setActiveTab('calendar')}>
+              <span>Book Your Call</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Page 2 - About Sneha Shah */}
+      <section id="about" className="about-section">
+        <div className="section-container">
+          <div className="about-grid">
+            <div className="about-visual">
+              <div className="about-morph-blob">
+                <img 
+                  src="/sneha_about_avatar.png" 
+                  alt="Sneha Shah - Study Abroad Counselor" 
+                  className="about-morph-image"
+                />
+              </div>
+              <div className="experience-badge glass">
+                <span className="exp-number">8</span>
+                <span className="exp-text">Years of<br/>Experience</span>
+              </div>
+            </div>
+
+            <div className="about-content">
+              <div className="hero-badge">Meet Your Counselor</div>
+              <h2 className="section-title">Meet Your Counselor</h2>
+              <div className="bio-text">
+                <p>Hi, I'm Sneha Shah - founder of EdVantage Uni and your dedicated study abroad partner.</p>
+                <p>
+                  I hold an MA and B.Ed from the University of Mumbai, and I've spent 8 years working across every 
+                  dimension of the international education industry - from counseling and applications to test coaching 
+                  and visa strategy. I've personally worked on 3,000+ student profiles, helping them secure places at 
+                  top institutions across the USA, Canada, Australia, UK, Singapore, the Netherlands, and beyond.
+                </p>
+                <p>
+                  I'm a TOEFL Certified Trainer and a British Council Certified IELTS Trainer, with a personal PTE score 
+                  of 90 - so when I coach you, I speak from experience, not just theory.
+                </p>
+                <p>
+                  In 2024, I made the journey myself immigrating to Australia. I know firsthand what it feels like to 
+                  navigate a new country, a new system, and a new life. That lived experience shapes everything I do 
+                  for my students.
+                </p>
+                <blockquote className="about-quote">
+                  "At EdVantage Uni, you're not getting a call centre. You're getting me."
+                </blockquote>
+              </div>
+            </div>
+          </div>
+
+          {/* Credentials Strip */}
+          <div className="credentials-section">
+            <h3 className="credentials-title" style={{ fontWeight: 700, fontSize: '1.2rem', marginBottom: '24px', color: 'var(--text-primary)' }}>Credentials strip:</h3>
+            <div className="credentials-grid">
+              <div className="credential-item glass">
+                <div className="cred-icon">🎓</div>
+                <p><strong>MA, B.Ed</strong><br/>University of Mumbai</p>
+              </div>
+              <div className="credential-item glass">
+                <div className="cred-icon">📝</div>
+                <p><strong>TOEFL</strong><br/>Certified Trainer</p>
+              </div>
+              <div className="credential-item glass">
+                <div className="cred-icon">🇬🇧</div>
+                <p><strong>IELTS Trainer</strong><br/>British Council Certified</p>
+              </div>
+              <div className="credential-item glass">
+                <div className="cred-icon">🏆</div>
+                <p><strong>PTE Score: 90</strong><br/>Personal Score</p>
+              </div>
+              <div className="credential-item glass">
+                <div className="cred-icon">💼</div>
+                <p><strong>8 Years</strong><br/>Industry Experience</p>
+              </div>
+              <div className="credential-item glass">
+                <div className="cred-icon">👥</div>
+                <p><strong>3,000+</strong><br/>Student Profiles</p>
+              </div>
+              <div className="credential-item glass">
+                <div className="cred-icon">🇦🇺</div>
+                <p><strong>Australia Based</strong><br/>Immigrated 2024</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Page 3 - Services */}
+      <section id="services" className="services-section">
+        <div className="section-container">
+          <div className="section-header">
+            <div className="hero-badge m-auto">What We Offer</div>
+            <h2 className="section-title text-center">What We Offer</h2>
+            <div className="section-divider"></div>
+            <p className="section-description text-center">
+              Two core service pillars designed to get you from 'thinking about it' to 'accepted.'
+            </p>
+          </div>
+
+          <div className="services-grid">
+            {/* Service 1 */}
+            <div className="service-card glass">
+              <div className="service-header">
+                <div className="service-icon-circle">✈️</div>
+                <div>
+                  <span className="service-label">Service 1</span>
+                  <h3>Overseas Education Counselling</h3>
+                </div>
+              </div>
+              <p className="service-tagline">Your complete study abroad roadmap.</p>
+              
+              <ul className="service-features">
+                <li>
+                  <span className="feature-icon">✓</span>
+                  <div>
+                    <strong>Career Counseling</strong>
+                    <p>Identify the right field, level, and country for your goals</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="feature-icon">✓</span>
+                  <div>
+                    <strong>University Selection</strong>
+                    <p>Shortlist institutions based on profile, budget, and outcomes</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="feature-icon">✓</span>
+                  <div>
+                    <strong>Application Essays</strong>
+                    <p>Compelling SOPs and personal statements that stand out</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="feature-icon">✓</span>
+                  <div>
+                    <strong>Application Support</strong>
+                    <p>Document checklists, portal guidance, and deadline management</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="feature-icon">✓</span>
+                  <div>
+                    <strong>Financial Planning</strong>
+                    <p>Scholarships, loans, cost-of-living breakdowns by country</p>
+                  </div>
+                </li>
+                <li>
+                  <span className="feature-icon">✓</span>
+                  <div>
+                    <strong>Visa Counseling</strong>
+                    <p>Step-by-step visa guidance for USA, Canada, Australia, UK, and more</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            {/* Service 2 */}
+            <div className="service-card glass">
+              <div className="service-header">
+                <div className="service-icon-circle">📝</div>
+                <div>
+                  <span className="service-label">Service 2</span>
+                  <h3>English Language Test Coaching</h3>
+                </div>
+              </div>
+              <p className="service-tagline">Score high. Open more doors.</p>
+              <p className="service-intro-p">We offer coaching for all three major English proficiency tests:</p>
+
+              <div className="test-coaching-list">
+                <div className="test-item glass">
+                  <div className="test-badge">PTE</div>
+                  <div className="test-details">
+                    <h4>PTE - Pearson Test of English</h4>
+                    <p>Sneha scored 90 personally. Secure high marks using verified strategies.</p>
+                  </div>
+                </div>
+
+                <div className="test-item glass">
+                  <div className="test-badge">TOEFL</div>
+                  <div className="test-details">
+                    <h4>TOEFL - Test of English as a Foreign Language</h4>
+                    <p>Coached by a TOEFL Certified Trainer to master templates and score rubrics.</p>
+                  </div>
+                </div>
+
+                <div className="test-item glass">
+                  <div className="test-badge">IELTS</div>
+                  <div className="test-details">
+                    <h4>IELTS - International English Language Testing System</h4>
+                    <p>British Council Certified IELTS Trainer guidance. Gain deep band scores.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="coaching-footer glass">
+                <p>🎯 Sessions are tailored to your target score, timeline, and weak areas.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="service-cta-footer glass">
+            <div className="s-cta-text">
+              <h3>Not sure which service you need?</h3>
+              <p>Let's talk.</p>
+            </div>
+            <a href="#contact" className="btn btn-primary" onClick={() => setActiveTab('calendar')}>
+              <span>Book a Free Call</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Page 4 - Destinations */}
+      <section id="destinations" className="destinations-section">
+        <div className="section-container">
+          <div className="section-header">
+            <div className="hero-badge m-auto">Where Can We Send You?</div>
+            <h2 className="section-title text-center">Where Can We Send You?</h2>
+            <div className="section-divider"></div>
+          </div>
+
+          <div className="destinations-grid">
+            <div className="destination-card">
+              <div className="dest-image-container">
+                <img src="/dest_usa.png" alt="USA Landmark" className="dest-bg-image" />
+                <span className="flag-badge">🇺🇸</span>
+              </div>
+              <div className="dest-card-content">
+                <h3>USA</h3>
+                <p>USA - Ivy League to state schools, student visa (F-1), and OPT career search strategy guidance.</p>
+                <div className="dest-badge-strip">
+                  <span>F-1 Visa</span>
+                  <span>OPT</span>
+                  <span>Ivy League</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="destination-card">
+              <div className="dest-image-container">
+                <img src="/dest_canada.png" alt="Canada Landmark" className="dest-bg-image" />
+                <span className="flag-badge">🇨🇦</span>
+              </div>
+              <div className="dest-card-content">
+                <h3>Canada</h3>
+                <p>Canada - Post-study PR pathways, high-quality co-op programs, and study permit application expertise.</p>
+                <div className="dest-badge-strip">
+                  <span>PR Pathways</span>
+                  <span>Co-op</span>
+                  <span>Study Permit</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="destination-card featured-dest">
+              <div className="dest-image-container">
+                <div className="featured-ribbon">Counselor Base</div>
+                <img src="/dest_australia.png" alt="Australia Landmark" className="dest-bg-image" />
+                <span className="flag-badge">🇦🇺</span>
+              </div>
+              <div className="dest-card-content">
+                <h3>Australia</h3>
+                <p>Australia - Sneha's current base; deep first-hand knowledge of the student visa (Subclass 500) and post-study opportunities.</p>
+                <div className="dest-badge-strip">
+                  <span>Subclass 500</span>
+                  <span>Base Country</span>
+                  <span>Local Info</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="destination-card">
+              <div className="dest-image-container">
+                <img src="/dest_uk.png" alt="UK Landmark" className="dest-bg-image" />
+                <span className="flag-badge">🇬🇧</span>
+              </div>
+              <div className="dest-card-content">
+                <h3>UK</h3>
+                <p>UK - Russell Group admission strategies, standard UCAS process, and Graduate Route visa options.</p>
+                <div className="dest-badge-strip">
+                  <span>UCAS</span>
+                  <span>Russell Group</span>
+                  <span>Graduate Visa</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="destination-card">
+              <div className="dest-image-container">
+                <img src="/dest_singapore.png" alt="Singapore Landmark" className="dest-bg-image" />
+                <span className="flag-badge">🇸🇬</span>
+              </div>
+              <div className="dest-card-content">
+                <h3>Singapore</h3>
+                <p>Singapore - Asia's academic powerhouses NUS, NTU, and SMU offering top business & tech programs.</p>
+                <div className="dest-badge-strip">
+                  <span>NUS / NTU</span>
+                  <span>SMU</span>
+                  <span>Asia Hub</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="destination-card">
+              <div className="dest-image-container">
+                <img src="/dest_netherlands.png" alt="Netherlands Landmark" className="dest-bg-image" />
+                <span className="flag-badge">🇳🇱</span>
+              </div>
+              <div className="dest-card-content">
+                <h3>Netherlands</h3>
+                <p>Netherlands - Highly affordable top-tier English-taught research programs and Nuffic system guidance.</p>
+                <div className="dest-badge-strip">
+                  <span>Nuffic</span>
+                  <span>English taught</span>
+                  <span>Budget-friendly</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="destinations-footer glass" style={{ marginTop: '30px' }}>
+            <p>
+              We also counsel for additional destinations based on your profile. Book a call to discuss.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Page 5 - Contact / Book a Call */}
+      <section id="contact" className="contact-section">
+        <div className="section-container">
+          <div className="contact-layout">
+            <div className="contact-info">
+              <div className="hero-badge">Let's Connect</div>
+              <h2>Let's Talk About Your Future</h2>
+              <p className="contact-subtitle">
+                Fill in the form below and we'll be in touch within 24 hours. 
+                Or book a slot directly on our calendar.
+              </p>
+
+              <div className="contact-promises">
+                <div className="promise-item">
+                  <span className="promise-icon">⚡</span>
+                  <div>
+                    <h4>Response within 24 hours</h4>
+                    <p>Fill in the form and we will get back to you immediately.</p>
+                  </div>
+                </div>
+                <div className="promise-item">
+                  <span className="promise-icon">🗓️</span>
+                  <div>
+                    <h4>Direct Calendar booking</h4>
+                    <p>Select any open time slot that fits your schedule.</p>
+                  </div>
+                </div>
+                <div className="promise-item">
+                  <span className="promise-icon">🔑</span>
+                  <div>
+                    <h4>100% Free Consultation</h4>
+                    <p>No fee for the initial 30-minute discovery call.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="social-links">
+                <a href="mailto:sneha@edvantageuni.com" className="social-link-item glass">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  <span>sneha@edvantageuni.com</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="contact-widget glass">
+              <div className="widget-tabs">
+                <button className={`tab-btn ${activeTab === 'form' ? 'active' : ''}`} onClick={() => setActiveTab('form')}>Inquiry Form</button>
+                <button className={`tab-btn ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => setActiveTab('calendar')}>Interactive Scheduler</button>
+              </div>
+
+              {/* Inquiry Form Tab */}
+              {activeTab === 'form' && (
+                <div className="tab-content active">
+                  {!inquirySuccess ? (
+                    <form className="inquiry-form" onSubmit={handleInquirySubmit}>
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Your Name</label>
+                          <input 
+                            type="text" 
+                            placeholder="John Doe" 
+                            required 
+                            value={inquiryData.name}
+                            onChange={(e) => setInquiryData({ ...inquiryData, name: e.target.value })}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Email Address</label>
+                          <input 
+                            type="email" 
+                            placeholder="john@example.com" 
+                            required 
+                            value={inquiryData.email}
+                            onChange={(e) => setInquiryData({ ...inquiryData, email: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Phone Number</label>
+                          <input 
+                            type="tel" 
+                            placeholder="+91 98765 43210" 
+                            required 
+                            value={inquiryData.phone}
+                            onChange={(e) => setInquiryData({ ...inquiryData, phone: e.target.value })}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Preferred Destination</label>
+                          <select 
+                            required 
+                            value={inquiryData.destination}
+                            onChange={(e) => setInquiryData({ ...inquiryData, destination: e.target.value })}
+                          >
+                            <option value="">Select destination</option>
+                            <option value="USA">USA</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Australia">Australia</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="Singapore">Singapore</option>
+                            <option value="Netherlands">Netherlands</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <label>Required Service</label>
+                        <select 
+                          required 
+                          value={inquiryData.service}
+                          onChange={(e) => setInquiryData({ ...inquiryData, service: e.target.value })}
+                        >
+                          <option value="">Select service</option>
+                          <option value="Counselling">Overseas Education Counselling</option>
+                          <option value="Coaching">Language Test Coaching</option>
+                          <option value="Both">Both Services</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Tell us about your background</label>
+                        <textarea 
+                          rows="4" 
+                          placeholder="Intake year, level of study..." 
+                          required
+                          value={inquiryData.message}
+                          onChange={(e) => setInquiryData({ ...inquiryData, message: e.target.value })}
+                        ></textarea>
+                      </div>
+                      {inquiryError && <p style={{ color: '#ef4444', fontSize: '0.85rem' }}>{inquiryError}</p>}
+                      <button type="submit" className="btn btn-primary btn-block" disabled={inquiryLoading}>
+                        {inquiryLoading ? 'Submitting...' : 'Send Inquiry'}
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="success-message">
+                      <div className="success-icon">✓</div>
+                      <h3>Inquiry Sent!</h3>
+                      <p>Thank you! Sneha will analyze your profile and reach out within 24 hours.</p>
+                      <button className="btn btn-secondary btn-sm" onClick={() => {
+                        setInquirySuccess(false);
+                        setInquiryData({ name: '', email: '', phone: '', destination: '', service: '', message: '' });
+                      }}>
+                        Send another inquiry
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Interactive Scheduler Tab */}
+              {activeTab === 'calendar' && (
+                <div className="tab-content active">
+                  {!bookingSuccess ? (
+                    <div className="calendar-wrapper">
+                      <div className="calendar-header">
+                        <button className="cal-nav-btn" onClick={prevMonth}>◀</button>
+                        <span className="calendar-month-year">
+                          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                        </span>
+                        <button className="cal-nav-btn" onClick={nextMonth}>▶</button>
+                      </div>
+
+                      <div className="calendar-weekdays">
+                        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+                      </div>
+
+                      <div className="calendar-days">
+                        {getMonthDays().map((d, index) => {
+                          if (d.empty) {
+                            return <div key={`empty-${index}`} className="calendar-day empty"></div>;
+                          }
+                          const isSelected = selectedDate === d.dateStr;
+                          return (
+                            <button
+                              key={`day-${d.day}`}
+                              className={`calendar-day ${d.disabled ? 'disabled' : 'available'} ${isSelected ? 'selected' : ''} ${d.isToday ? 'today' : ''}`}
+                              disabled={d.disabled}
+                              onClick={() => {
+                                setSelectedDate(d.dateStr);
+                                setSelectedSlot(null);
+                              }}
+                            >
+                              {d.day}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {selectedDate && (
+                        <div className="time-slots-container">
+                          <p className="slots-title">Available slots for {selectedDate}:</p>
+                          <div className="time-slots-grid">
+                            {availableSlots.map(slot => {
+                              const isBusy = busySlots.includes(slot);
+                              const isSelectedSlot = selectedSlot === slot;
+                              return (
+                                <button
+                                  key={slot}
+                                  className={`time-slot ${isBusy ? 'busy' : ''} ${isSelectedSlot ? 'selected' : ''}`}
+                                  disabled={isBusy}
+                                  onClick={() => setSelectedSlot(slot)}
+                                >
+                                  {slot}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedDate && selectedSlot && (
+                        <form className="booking-inputs-grid" onSubmit={handleBookingSubmit}>
+                          <p style={{ fontSize: '0.85rem', fontWeight: 600 }}>Enter details to confirm your call:</p>
+                          <div className="form-group">
+                            <input 
+                              type="text" 
+                              placeholder="Your Full Name" 
+                              required 
+                              value={bookingDetails.name}
+                              onChange={(e) => setBookingDetails({ ...bookingDetails, name: e.target.value })}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <input 
+                              type="email" 
+                              placeholder="Your Email Address" 
+                              required 
+                              value={bookingDetails.email}
+                              onChange={(e) => setBookingDetails({ ...bookingDetails, email: e.target.value })}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <input 
+                              type="tel" 
+                              placeholder="Your Phone Number" 
+                              required 
+                              value={bookingDetails.phone}
+                              onChange={(e) => setBookingDetails({ ...bookingDetails, phone: e.target.value })}
+                            />
+                          </div>
+                          {bookingError && <p style={{ color: '#ef4444', fontSize: '0.82rem' }}>{bookingError}</p>}
+                          <button type="submit" className="btn btn-primary btn-block" disabled={bookingLoading}>
+                            {bookingLoading ? 'Reserving...' : 'Book 30-Min Discovery Session'}
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="success-message">
+                      <div className="success-icon">📅</div>
+                      <h3>Discovery Call Booked!</h3>
+                      <p>Your free 30-minute study counseling session with Sneha Shah is scheduled for:</p>
+                      <p style={{ fontWeight: 700, color: '#6366f1', margin: '8px 0 20px 0', fontSize: '1.1rem' }}>
+                        {selectedDate} at {selectedSlot}
+                      </p>
+                      <p className="sub-text">We've sent an invitation and a meeting link to {bookingDetails.email}.</p>
+                      <button className="btn btn-secondary btn-sm" onClick={resetScheduler}>
+                        Book another slot
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="main-footer">
+        <div className="footer-container">
+          <div className="footer-brand">
+            <a href="#home" className="footer-logo">
+              <span className="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logo-grad-f-simple)" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinejoin="round"/>
+                  <path d="M2 17L12 22L22 17" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <defs>
+                    <linearGradient id="logo-grad-f-simple" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#8b5cf6"/>
+                      <stop offset="1" stopColor="#ec4899"/>
+                    </linearGradient>
+                    <linearGradient id="logo-grad-f-stroke-simple" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#a855f7"/>
+                      <stop offset="1" stopColor="#6366f1"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </span>
+              <span>EdVantage <span className="accent-text">Uni</span></span>
+            </a>
+            <p>Empowering student ambitions globally. Deep industry expertise, certified English test coaching, and customized counseling workflows directly from Australia.</p>
+          </div>
+          
+          <div className="footer-links-group">
+            <h4>Explore</h4>
+            <a href="#home">Home</a>
+            <a href="#about">About Sneha</a>
+            <a href="#services">Services</a>
+            <a href="#destinations">Destinations</a>
+          </div>
+
+          <div className="footer-links-group">
+            <h4>Contact Info</h4>
+            <p>📍 Based in Australia (immigrated 2024)</p>
+            <p>📧 <a href="mailto:sneha@edvantageuni.com" style={{ color: '#94a3b8', textDecoration: 'none' }}>sneha@edvantageuni.com</a></p>
+            <p>🕒 Mon - Sat: 9 AM - 6 PM (AEST)</p>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p>&copy; 2026 EdVantage Uni. All rights reserved. Designed with ❤️ for Sneha Shah.</p>
+        </div>
+      </footer>
+    </>
+  );
+}

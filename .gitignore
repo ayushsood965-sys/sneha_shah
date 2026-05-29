@@ -1,0 +1,19 @@
+# Dependency directories
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Production build outputs
+client/dist/
+client/build/
+server/dist/
+
+# Environment variables
+.env
+server/.env
+
+# Local development files
+.DS_Store
+*.log
+.eslintcache
+.vscode/
