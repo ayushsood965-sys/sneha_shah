@@ -311,6 +311,234 @@ export default function App() {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
+  if (isAdminLoggedIn) {
+    return (
+      <div className="admin-dashboard-overlay" style={{ position: 'relative', minHeight: '100vh', zIndex: 1, paddingBottom: '60px', background: 'var(--gradient-bg)' }}>
+        <div className="admin-dashboard-container">
+          {/* Header */}
+          <header className="admin-header">
+            <div className="admin-logo-group">
+              <span className="logo-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logo-grad-f-simple)" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinejoin="round"/>
+                  <path d="M2 17L12 22L22 17" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <defs>
+                    <linearGradient id="logo-grad-f-simple" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#8b5cf6"/>
+                      <stop offset="1" stopColor="#ec4899"/>
+                    </linearGradient>
+                    <linearGradient id="logo-grad-f-stroke-simple" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#a855f7"/>
+                      <stop offset="1" stopColor="#6366f1"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </span>
+              <h2>EdVantage Uni | <span className="accent-text" style={{ fontWeight: 600 }}>Counselor Console</span></h2>
+            </div>
+            
+            <div className="admin-controls">
+              <div className="db-status-badge">
+                <span className={`status-glow-dot ${dbConnected ? 'active' : 'fallback'}`}></span>
+                <span>Database: {dbConnected ? 'MongoDB Connected' : 'In-Memory Fallback'}</span>
+              </div>
+              <button className="btn-admin-logout" onClick={handleAdminLogout}>
+                Log Out
+              </button>
+            </div>
+          </header>
+
+          {/* Metrics Panels */}
+          <div className="admin-metrics-grid">
+            <div className="metric-panel">
+              <div className="metric-icon-slot metric-purple">✉️</div>
+              <div className="metric-details">
+                <span className="metric-label">Total Inquiries</span>
+                <span className="metric-value">{adminInquiries.length}</span>
+              </div>
+            </div>
+            
+            <div className="metric-panel">
+              <div className="metric-icon-slot metric-pink">📅</div>
+              <div className="metric-details">
+                <span className="metric-label">Scheduled Bookings</span>
+                <span className="metric-value">{adminBookings.length}</span>
+              </div>
+            </div>
+
+            <div className="metric-panel">
+              <div className="metric-icon-slot metric-green">🟢</div>
+              <div className="metric-details">
+                <span className="metric-label">System Mode</span>
+                <span className="metric-value" style={{ fontSize: '1.05rem', fontWeight: 800 }}>
+                  {dbConnected ? 'PROD DATABASE' : 'DEV LOCAL ARRAY'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="admin-tabs-nav">
+            <button 
+              className={`admin-tab-btn ${adminTab === 'inquiries' ? 'active' : ''}`}
+              onClick={() => setAdminTab('inquiries')}
+            >
+              Student Inquiries ({adminInquiries.length})
+            </button>
+            <button 
+              className={`admin-tab-btn ${adminTab === 'bookings' ? 'active' : ''}`}
+              onClick={() => setAdminTab('bookings')}
+            >
+              Discovery Bookings ({adminBookings.length})
+            </button>
+          </div>
+
+          {/* Workspace Area */}
+          <div className="admin-workspace">
+            {adminDataLoading ? (
+              <div className="dashboard-empty" style={{ margin: 'auto' }}>
+                <div className="empty-icon" style={{ animation: 'spin 2s linear infinite' }}>🔄</div>
+                <div className="empty-text">
+                  <h4>Loading Records</h4>
+                  <p>Synchronizing data with the server...</p>
+                </div>
+              </div>
+            ) : adminDataError ? (
+              <div className="dashboard-empty" style={{ margin: 'auto', color: '#ef4444' }}>
+                <div className="empty-icon">⚠️</div>
+                <div className="empty-text">
+                  <h4>Sync Error</h4>
+                  <p>{adminDataError}</p>
+                </div>
+              </div>
+            ) : adminTab === 'inquiries' ? (
+              // Inquiries Workspace
+              <>
+                <div className="workspace-title-bar">
+                  <h3>Inquiries Received</h3>
+                  <button className="btn" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={fetchAdminData}>🔄 Refresh</button>
+                </div>
+                
+                {adminInquiries.length === 0 ? (
+                  <div className="dashboard-empty" style={{ margin: 'auto' }}>
+                    <div className="empty-icon">📂</div>
+                    <div className="empty-text">
+                      <h4>No inquiries yet</h4>
+                      <p>Student query messages submitted through the contact form will show up here.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="admin-table-container">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Student Details</th>
+                          <th>Contact Info</th>
+                          <th>Requested Area</th>
+                          <th>Message / Inquiry Details</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {adminInquiries.map(item => (
+                          <tr key={item._id}>
+                            <td>
+                              <strong>{item.name}</strong>
+                              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>
+                                Submitted: {new Date(item.createdAt).toLocaleString()}
+                              </div>
+                            </td>
+                            <td>
+                              <div>📧 {item.email}</div>
+                              <div style={{ marginTop: '2px' }}>📞 {item.phone}</div>
+                            </td>
+                            <td>
+                              <span className="dash-tag dash-tag-primary">📍 {item.destination}</span>
+                              <div style={{ marginTop: '6px' }}><span className="dash-tag dash-tag-accent">🛠️ {item.service}</span></div>
+                            </td>
+                            <td style={{ maxWidth: '350px', wordBreak: 'break-word' }}>
+                              {item.message}
+                            </td>
+                            <td>
+                              <button className="btn-archive" onClick={() => handleArchiveInquiry(item._id)}>
+                                🗑️ Archive
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            ) : (
+              // Bookings Workspace
+              <>
+                <div className="workspace-title-bar">
+                  <h3>Discovery Bookings Scheduled</h3>
+                  <button className="btn" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={fetchAdminData}>🔄 Refresh</button>
+                </div>
+
+                {adminBookings.length === 0 ? (
+                  <div className="dashboard-empty" style={{ margin: 'auto' }}>
+                    <div className="empty-icon">📅</div>
+                    <div className="empty-text">
+                      <h4>No discovery sessions scheduled</h4>
+                      <p>Appointments scheduled via the calendar widget will be displayed here.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="admin-table-container">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Student Name</th>
+                          <th>Contact Details</th>
+                          <th>Appointment Slot</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {adminBookings.map(item => (
+                          <tr key={item._id}>
+                            <td>
+                              <strong>{item.name}</strong>
+                            </td>
+                            <td>
+                              <div>📧 {item.email}</div>
+                              <div style={{ marginTop: '2px' }}>📞 {item.phone}</div>
+                            </td>
+                            <td>
+                              <strong style={{ color: 'var(--primary)' }}>📅 {item.date}</strong>
+                              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent)', marginTop: '2px' }}>
+                                🕒 {item.timeSlot} (AEST)
+                              </div>
+                            </td>
+                            <td>
+                              <span className="dash-tag" style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
+                                ✓ Scheduled
+                              </span>
+                            </td>
+                            <td>
+                              <button className="btn-archive" onClick={() => handleArchiveBooking(item._id)}>
+                                🗑️ Archive
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Dynamic Background Glow Rings */}
@@ -1118,8 +1346,41 @@ export default function App() {
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <p>&copy; 2026 EdVantage Uni. All rights reserved. Designed with ❤️ for Sneha Shah. | <span className="footer-admin-link" onClick={() => setIsAdminModalOpen(true)}>Admin Portal</span></p>
+        <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+          <p style={{ margin: 0 }}>&copy; 2026 EdVantage Uni. All rights reserved. Designed with ❤️ for Sneha Shah.</p>
+          <button 
+            className="footer-admin-link" 
+            onClick={() => setIsAdminModalOpen(true)} 
+            style={{ 
+              background: 'rgba(255,255,255,0.06)', 
+              border: '1px solid rgba(255,255,255,0.12)', 
+              padding: '6px 16px', 
+              borderRadius: '100px', 
+              color: '#94a3b8', 
+              fontSize: '0.78rem', 
+              fontWeight: 700, 
+              cursor: 'pointer', 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '6px', 
+              transition: 'all 0.3s ease',
+              outline: 'none'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(99, 102, 241, 0.15)';
+              e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+              e.currentTarget.style.boxShadow = '0 0 12px rgba(99, 102, 241, 0.3)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+              e.currentTarget.style.color = '#94a3b8';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            🔒 Counselor Login
+          </button>
         </div>
       </footer>
 
@@ -1169,223 +1430,6 @@ export default function App() {
                 {adminLoginLoading ? 'Verifying...' : 'Sign In'}
               </button>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Admin Dashboard Overlay */}
-      {isAdminLoggedIn && (
-        <div className="admin-dashboard-overlay">
-          <div className="admin-dashboard-container">
-            {/* Header */}
-            <header className="admin-header">
-              <div className="admin-logo-group">
-                <span className="logo-icon">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logo-grad-f-simple)" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinejoin="round"/>
-                    <path d="M2 17L12 22L22 17" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
-                <h2>EdVantage Uni | <span className="accent-text" style={{ fontWeight: 600 }}>Counselor Console</span></h2>
-              </div>
-              
-              <div className="admin-controls">
-                <div className="db-status-badge">
-                  <span className={`status-glow-dot ${dbConnected ? 'active' : 'fallback'}`}></span>
-                  <span>Database: {dbConnected ? 'MongoDB Connected' : 'In-Memory Fallback'}</span>
-                </div>
-                <button className="btn-admin-logout" onClick={handleAdminLogout}>
-                  Log Out
-                </button>
-              </div>
-            </header>
-
-            {/* Metrics Panels */}
-            <div className="admin-metrics-grid">
-              <div className="metric-panel">
-                <div className="metric-icon-slot metric-purple">✉️</div>
-                <div className="metric-details">
-                  <span className="metric-label">Total Inquiries</span>
-                  <span className="metric-value">{adminInquiries.length}</span>
-                </div>
-              </div>
-              
-              <div className="metric-panel">
-                <div className="metric-icon-slot metric-pink">📅</div>
-                <div className="metric-details">
-                  <span className="metric-label">Scheduled Bookings</span>
-                  <span className="metric-value">{adminBookings.length}</span>
-                </div>
-              </div>
-
-              <div className="metric-panel">
-                <div className="metric-icon-slot metric-green">🟢</div>
-                <div className="metric-details">
-                  <span className="metric-label">System Mode</span>
-                  <span className="metric-value" style={{ fontSize: '1.05rem', fontWeight: 800 }}>
-                    {dbConnected ? 'PROD DATABASE' : 'DEV LOCAL ARRAY'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Navigation Tabs */}
-            <div className="admin-tabs-nav">
-              <button 
-                className={`admin-tab-btn ${adminTab === 'inquiries' ? 'active' : ''}`}
-                onClick={() => setAdminTab('inquiries')}
-              >
-                Student Inquiries ({adminInquiries.length})
-              </button>
-              <button 
-                className={`admin-tab-btn ${adminTab === 'bookings' ? 'active' : ''}`}
-                onClick={() => setAdminTab('bookings')}
-              >
-                Discovery Bookings ({adminBookings.length})
-              </button>
-            </div>
-
-            {/* Workspace Area */}
-            <div className="admin-workspace">
-              {adminDataLoading ? (
-                <div className="dashboard-empty" style={{ margin: 'auto' }}>
-                  <div className="empty-icon" style={{ animation: 'spin 2s linear infinite' }}>🔄</div>
-                  <div className="empty-text">
-                    <h4>Loading Records</h4>
-                    <p>Synchronizing data with the server...</p>
-                  </div>
-                </div>
-              ) : adminDataError ? (
-                <div className="dashboard-empty" style={{ margin: 'auto', color: '#ef4444' }}>
-                  <div className="empty-icon">⚠️</div>
-                  <div className="empty-text">
-                    <h4>Sync Error</h4>
-                    <p>{adminDataError}</p>
-                  </div>
-                </div>
-              ) : adminTab === 'inquiries' ? (
-                // Inquiries Workspace
-                <>
-                  <div className="workspace-title-bar">
-                    <h3>Inquiries Received</h3>
-                    <button className="btn" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={fetchAdminData}>🔄 Refresh</button>
-                  </div>
-                  
-                  {adminInquiries.length === 0 ? (
-                    <div className="dashboard-empty" style={{ margin: 'auto' }}>
-                      <div className="empty-icon">📂</div>
-                      <div className="empty-text">
-                        <h4>No inquiries yet</h4>
-                        <p>Student query messages submitted through the contact form will show up here.</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="admin-table-container">
-                      <table className="admin-table">
-                        <thead>
-                          <tr>
-                            <th>Student Details</th>
-                            <th>Contact Info</th>
-                            <th>Requested Area</th>
-                            <th>Message / Inquiry Details</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {adminInquiries.map(item => (
-                            <tr key={item._id}>
-                              <td>
-                                <strong>{item.name}</strong>
-                                <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>
-                                  Submitted: {new Date(item.createdAt).toLocaleString()}
-                                </div>
-                              </td>
-                              <td>
-                                <div>📧 {item.email}</div>
-                                <div style={{ marginTop: '2px' }}>📞 {item.phone}</div>
-                              </td>
-                              <td>
-                                <span className="dash-tag dash-tag-primary">📍 {item.destination}</span>
-                                <div style={{ marginTop: '6px' }}><span className="dash-tag dash-tag-accent">🛠️ {item.service}</span></div>
-                              </td>
-                              <td style={{ maxWidth: '350px', wordBreak: 'break-word' }}>
-                                {item.message}
-                              </td>
-                              <td>
-                                <button className="btn-archive" onClick={() => handleArchiveInquiry(item._id)}>
-                                  🗑️ Archive
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </>
-              ) : (
-                // Bookings Workspace
-                <>
-                  <div className="workspace-title-bar">
-                    <h3>Discovery Bookings Scheduled</h3>
-                    <button className="btn" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={fetchAdminData}>🔄 Refresh</button>
-                  </div>
-
-                  {adminBookings.length === 0 ? (
-                    <div className="dashboard-empty" style={{ margin: 'auto' }}>
-                      <div className="empty-icon">📅</div>
-                      <div className="empty-text">
-                        <h4>No discovery sessions scheduled</h4>
-                        <p>Appointments scheduled via the calendar widget will be displayed here.</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="admin-table-container">
-                      <table className="admin-table">
-                        <thead>
-                          <tr>
-                            <th>Student Name</th>
-                            <th>Contact Details</th>
-                            <th>Appointment Slot</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {adminBookings.map(item => (
-                            <tr key={item._id}>
-                              <td>
-                                <strong>{item.name}</strong>
-                              </td>
-                              <td>
-                                <div>📧 {item.email}</div>
-                                <div style={{ marginTop: '2px' }}>📞 {item.phone}</div>
-                              </td>
-                              <td>
-                                <strong style={{ color: 'var(--primary)' }}>📅 {item.date}</strong>
-                                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent)', marginTop: '2px' }}>
-                                  🕒 {item.timeSlot} (AEST)
-                                </div>
-                              </td>
-                              <td>
-                                <span className="dash-tag" style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
-                                  ✓ Scheduled
-                                </span>
-                              </td>
-                              <td>
-                                <button className="btn-archive" onClick={() => handleArchiveBooking(item._id)}>
-                                  🗑️ Archive
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
           </div>
         </div>
       )}
