@@ -324,12 +324,12 @@ export default function App() {
                   <path d="M2 17L12 22L22 17" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <defs>
                     <linearGradient id="logo-grad-f-simple" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#8b5cf6"/>
-                      <stop offset="1" stopColor="#ec4899"/>
+                      <stop stopColor="#1e3a8a"/>
+                      <stop offset="1" stopColor="#2563eb"/>
                     </linearGradient>
                     <linearGradient id="logo-grad-f-stroke-simple" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#a855f7"/>
-                      <stop offset="1" stopColor="#6366f1"/>
+                      <stop stopColor="#1d4ed8"/>
+                      <stop offset="1" stopColor="#3b82f6"/>
                     </linearGradient>
                   </defs>
                 </svg>
@@ -553,12 +553,12 @@ export default function App() {
                 <path d="M2 12L12 17L22 12" stroke="url(#logo-grad-stroke-simple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <defs>
                   <linearGradient id="logo-grad-simple" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#8b5cf6"/>
-                    <stop offset="1" stopColor="#ec4899"/>
+                    <stop stopColor="#1e3a8a"/>
+                    <stop offset="1" stopColor="#2563eb"/>
                   </linearGradient>
                   <linearGradient id="logo-grad-stroke-simple" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#a855f7"/>
-                    <stop offset="1" stopColor="#6366f1"/>
+                    <stop stopColor="#1d4ed8"/>
+                    <stop offset="1" stopColor="#3b82f6"/>
                   </linearGradient>
                 </defs>
               </svg>

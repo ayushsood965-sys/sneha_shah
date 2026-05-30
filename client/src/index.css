@@ -9,27 +9,27 @@
     --bg-surface: rgba(255, 255, 255, 0.7);
     --bg-surface-hover: rgba(255, 255, 255, 0.85);
     --border-light: rgba(255, 255, 255, 0.45);
-    --border-focused: rgba(168, 85, 247, 0.3);
+    --border-focused: rgba(30, 58, 138, 0.3);
     
-    /* Primary brand colors - Royal Purples and Indigos */
-    --primary: #6366f1; /* Indigo */
-    --primary-hover: #4f46e5;
-    --accent: #a855f7; /* Purple */
-    --accent-hover: #9333ea;
-    --pink: #ec4899;
+    /* Primary brand colors - Royal Navy Blue and Steel Blues */
+    --primary: #1e3a8a; /* Deep Navy Blue */
+    --primary-hover: #1e40af;
+    --accent: #2563eb; /* Vibrant Blue */
+    --accent-hover: #1d4ed8;
+    --pink: #0284c7; /* Ocean Blue */
     
     --text-primary: #0f172a; /* Slate 900 */
     --text-secondary: #475569; /* Slate 600 */
     --text-muted: #64748b; /* Slate 500 */
     --text-white: #ffffff;
 
-    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-    --gradient-glow: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+    --gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    --gradient-glow: linear-gradient(135deg, rgba(30, 58, 138, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
     --gradient-bg-accent: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     
     --shadow-sm: 0 2px 8px -1px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 10px 25px -5px rgba(99, 102, 241, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
-    --shadow-lg: 0 20px 40px -15px rgba(99, 102, 241, 0.15), 0 10px 20px -10px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 10px 25px -5px rgba(30, 58, 138, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 20px 40px -15px rgba(30, 58, 138, 0.15), 0 10px 20px -10px rgba(0, 0, 0, 0.05);
     
     --radius-sm: 8px;
     --radius-md: 16px;
@@ -78,21 +78,21 @@ body {
 }
 
 .bg-glow-1 {
-    background-color: rgba(99, 102, 241, 0.2);
+    background-color: rgba(30, 58, 138, 0.12);
     top: -100px;
     right: -100px;
     animation: float 20s infinite ease-in-out alternate;
 }
 
 .bg-glow-2 {
-    background-color: rgba(168, 85, 247, 0.15);
+    background-color: rgba(37, 99, 235, 0.08);
     top: 50%;
     left: -200px;
     animation: float 25s infinite ease-in-out alternate-reverse;
 }
 
 .bg-glow-3 {
-    background-color: rgba(236, 72, 153, 0.12);
+    background-color: rgba(14, 165, 233, 0.06);
     bottom: 50px;
     right: -100px;
     animation: float 18s infinite ease-in-out alternate;
@@ -529,9 +529,9 @@ p {
 
 /* Trust Bar Ticker */
 .trust-bar {
-    border-top: 1px solid rgba(168, 85, 247, 0.12);
-    border-bottom: 1px solid rgba(168, 85, 247, 0.12);
-    background: rgba(168, 85, 247, 0.02);
+    border-top: 1px solid rgba(30, 58, 138, 0.12);
+    border-bottom: 1px solid rgba(30, 58, 138, 0.12);
+    background: rgba(30, 58, 138, 0.02);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     padding: 16px 0;
@@ -539,7 +539,7 @@ p {
     display: flex;
     align-items: center;
     overflow: hidden;
-    box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.01);
+    box-shadow: inset 0 0 20px rgba(30, 58, 138, 0.01);
 }
 
 .trust-bar-label {
@@ -549,10 +549,10 @@ p {
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    border-right: 1px solid rgba(168, 85, 247, 0.15);
+    border-right: 1px solid rgba(30, 58, 138, 0.15);
     padding-right: 20px;
     margin-right: 20px;
     z-index: 2;
@@ -576,8 +576,8 @@ p {
     font-size: 0.86rem;
     font-weight: 700;
     color: var(--text-secondary);
-    background: rgba(168, 85, 247, 0.05);
-    border: 1px solid rgba(168, 85, 247, 0.12);
+    background: rgba(30, 58, 138, 0.04);
+    border: 1px solid rgba(30, 58, 138, 0.1);
     padding: 5px 14px;
     border-radius: 100px;
     display: inline-flex;
@@ -587,14 +587,14 @@ p {
 }
 
 .ticker-item:hover {
-    background: rgba(168, 85, 247, 0.1);
-    border-color: rgba(168, 85, 247, 0.25);
+    background: rgba(30, 58, 138, 0.08);
+    border-color: rgba(37, 99, 235, 0.25);
     color: var(--accent-hover);
     transform: translateY(-1px);
 }
 
 .ticker-dot {
-    color: #a855f7;
+    color: #2563eb;
     opacity: 0.7;
     font-size: 1.2rem;
 }
@@ -2620,7 +2620,7 @@ section {
     }
     
     .admin-table-container::-webkit-scrollbar-thumb {
-        background: rgba(99, 102, 241, 0.3);
+        background: rgba(30, 58, 138, 0.35);
         border-radius: 10px;
     }
     
