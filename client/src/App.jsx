@@ -594,8 +594,7 @@ export default function App() {
               Your Global Education Journey Starts Here
             </h1>
             <p className="hero-subtitle animate-slide-up-delayed">
-              Expert guidance from someone who's lived it - Sneha Shah, Australia-based counselor with 8 years of 
-              experience and 3,000+ student profiles.
+              Expert guidance from counselors with extensive experience.
             </p>
             <div className="hero-ctas animate-slide-up-delayed-more">
               <a href="#contact" className="btn btn-primary" onClick={() => setActiveTab('calendar')}>
@@ -619,46 +618,50 @@ export default function App() {
 
         {/* Trust bar */}
         <div className="trust-bar">
-          <div className="trust-bar-label">3,000+ Students Guided & Opportunities Provided in:</div>
+          <div className="trust-bar-label">3,000+ Students Guided</div>
           <div className="trust-ticker-container">
             <div className="trust-ticker">
-              <span className="ticker-item">🇺🇸 United States</span>
+              <span className="ticker-item">🇺🇸 USA</span>
               <span className="ticker-dot">·</span>
               <span className="ticker-item">🇨🇦 Canada</span>
               <span className="ticker-dot">·</span>
               <span className="ticker-item">🇦🇺 Australia</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">🇬🇧 United Kingdom</span>
-              <span className="ticker-dot">·</span>
-              <span className="ticker-item">🇸🇬 Singapore</span>
-              <span className="ticker-dot">·</span>
-              <span className="ticker-item">🇳🇱 Netherlands</span>
+              <span className="ticker-item">🇬🇧 UK</span>
               <span className="ticker-dot">·</span>
               <span className="ticker-item">🇩🇪 Germany</span>
               <span className="ticker-dot">·</span>
               <span className="ticker-item">🇮🇪 Ireland</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">🇳🇿 New Zealand</span>
+              <span className="ticker-item">🇫🇷 France</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">🇳🇱 Netherlands</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">🇸🇬 Singapore</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">and more</span>
               
               {/* Infinite scrolling duplication */}
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">🇺🇸 United States</span>
+              <span className="ticker-item">🇺🇸 USA</span>
               <span className="ticker-dot">·</span>
               <span className="ticker-item">🇨🇦 Canada</span>
               <span className="ticker-dot">·</span>
               <span className="ticker-item">🇦🇺 Australia</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">🇬🇧 United Kingdom</span>
-              <span className="ticker-dot">·</span>
-              <span className="ticker-item">🇸🇬 Singapore</span>
-              <span className="ticker-dot">·</span>
-              <span className="ticker-item">🇳🇱 Netherlands</span>
+              <span className="ticker-item">🇬🇧 UK</span>
               <span className="ticker-dot">·</span>
               <span className="ticker-item">🇩🇪 Germany</span>
               <span className="ticker-dot">·</span>
               <span className="ticker-item">🇮🇪 Ireland</span>
               <span className="ticker-dot">·</span>
-              <span className="ticker-item">🇳🇿 New Zealand</span>
+              <span className="ticker-item">🇫🇷 France</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">🇳🇱 Netherlands</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">🇸🇬 Singapore</span>
+              <span className="ticker-dot">·</span>
+              <span className="ticker-item">and more</span>
             </div>
           </div>
         </div>
@@ -700,7 +703,7 @@ export default function App() {
           <div className="why-cta-box glass">
             <div className="why-cta-content">
               <h3>Ready to take the first step?</h3>
-              <p>Book a free 30-minute discovery call with Sneha.</p>
+              <p>Book a free 30-minute discovery call with a Senior Counselor.</p>
             </div>
             <a href="#contact" className="btn btn-primary" onClick={() => setActiveTab('calendar')}>
               <span>Book Your Call</span>
@@ -731,24 +734,18 @@ export default function App() {
             <div className="about-content">
               <h2 className="section-title">Meet Your Counselor</h2>
               <div className="bio-text">
-                <p>Hi, I'm Sneha Shah - founder of EdVantage Uni and your dedicated study abroad partner.</p>
+                <p>Meet Sneha Shah - founder of EdVantage Uni and your dedicated study abroad partner.</p>
                 <p>
-                  I hold an MA and B.Ed from the University of Mumbai, and I've spent 8 years working across every 
-                  dimension of the international education industry - from counseling and applications to test coaching 
-                  and visa strategy. I've personally worked on 3,000+ student profiles, helping them secure places at 
-                  top institutions across the USA, Canada, Australia, UK, Singapore, the Netherlands, and beyond.
+                  Sneha holds an MA and B.Ed from the University of Mumbai, and through her previous work experience, she has spent 8 years working across every dimension of the international education industry - from counseling and applications to test coaching and visa strategy. She has observed trends in the overseas education industry for years and worked with hundreds of students, helping them secure places at top institutions across the USA, Canada, Australia, UK, Singapore, the Netherlands, and beyond.
                 </p>
                 <p>
-                  I'm a TOEFL Certified Trainer and a British Council Certified IELTS Trainer, with a personal PTE score 
-                  of 90 - so when I coach you, I speak from experience, not just theory.
+                  She is a TOEFL Certified Trainer and a British Council Certified IELTS Trainer, with a personal PTE score of 90 - so when she coaches you, she speaks from experience, not just theory.
                 </p>
                 <p>
-                  In 2024, I made the journey myself immigrating to Australia. I know firsthand what it feels like to 
-                  navigate a new country, a new system, and a new life. That lived experience shapes everything I do 
-                  for my students.
+                  In 2024, Sneha moved to Australia. She knows firsthand what it feels like to navigate a new country, a new system, and a new life. That lived experience shapes her guidance to her students.
                 </p>
                 <blockquote className="about-quote">
-                  "At EdVantage Uni, you're not getting a call centre. You're getting me."
+                  "At EdVantage Uni, Sneha uses her professional opinion and lived experience to guide students towards their dream college abroad."
                 </blockquote>
               </div>
             </div>
@@ -798,7 +795,7 @@ export default function App() {
             <h2 className="section-title text-center">What We Offer</h2>
             <div className="section-divider"></div>
             <p className="section-description text-center">
-              Two core service pillars designed to get you from 'thinking about it' to 'accepted.'
+              Two core service pillars designed to get you from confusion to clarity.
             </p>
           </div>
 
@@ -877,7 +874,7 @@ export default function App() {
                   <div className="test-badge">PTE</div>
                   <div className="test-details">
                     <h4>PTE - Pearson Test of English</h4>
-                    <p>Sneha scored 90 personally. Secure high marks using verified strategies.</p>
+                    <p>Pearson Test of English</p>
                   </div>
                 </div>
 
@@ -885,7 +882,7 @@ export default function App() {
                   <div className="test-badge">TOEFL</div>
                   <div className="test-details">
                     <h4>TOEFL - Test of English as a Foreign Language</h4>
-                    <p>Coached by a TOEFL Certified Trainer to master templates and score rubrics.</p>
+                    <p>Test of English as a Foreign Language</p>
                   </div>
                 </div>
 
@@ -893,7 +890,7 @@ export default function App() {
                   <div className="test-badge">IELTS</div>
                   <div className="test-details">
                     <h4>IELTS - International English Language Testing System</h4>
-                    <p>British Council Certified IELTS Trainer guidance. Gain deep band scores.</p>
+                    <p>International English Language Testing System</p>
                   </div>
                 </div>
               </div>
@@ -921,7 +918,7 @@ export default function App() {
       <section id="destinations" className="destinations-section">
         <div className="section-container">
           <div className="section-header">
-            <h2 className="section-title text-center">Where Can We Send You?</h2>
+            <h2 className="section-title text-center">Our Global Footprints</h2>
             <div className="section-divider"></div>
           </div>
 
@@ -933,7 +930,7 @@ export default function App() {
               </div>
               <div className="dest-card-content">
                 <h3>USA</h3>
-                <p>USA - Ivy League to state schools, student visa (F-1), and OPT career search strategy guidance.</p>
+                <p>Ivy League to state schools, student visa (F-1), OPT guidance.</p>
                 <div className="dest-badge-strip">
                   <span>F-1 Visa</span>
                   <span>OPT</span>
@@ -949,9 +946,9 @@ export default function App() {
               </div>
               <div className="dest-card-content">
                 <h3>Canada</h3>
-                <p>Canada - Post-study PR pathways, high-quality co-op programs, and study permit application expertise.</p>
+                <p>Top schools, masters and diploma programs, co-op programs, study permit expertise.</p>
                 <div className="dest-badge-strip">
-                  <span>PR Pathways</span>
+                  <span>Masters</span>
                   <span>Co-op</span>
                   <span>Study Permit</span>
                 </div>
@@ -966,11 +963,11 @@ export default function App() {
               </div>
               <div className="dest-card-content">
                 <h3>Australia</h3>
-                <p>Australia - Sneha's current base; deep first-hand knowledge of the student visa (Subclass 500) and post-study opportunities.</p>
+                <p>Group of 8, deep knowledge of the student visa application (Subclass 500).</p>
                 <div className="dest-badge-strip">
                   <span>Subclass 500</span>
-                  <span>Base Country</span>
-                  <span>Local Info</span>
+                  <span>Group of 8</span>
+                  <span>Student Visa</span>
                 </div>
               </div>
             </div>
@@ -982,7 +979,7 @@ export default function App() {
               </div>
               <div className="dest-card-content">
                 <h3>UK</h3>
-                <p>UK - Russell Group admission strategies, standard UCAS process, and Graduate Route visa options.</p>
+                <p>Russell Group universities, Expertise in Graduate Route visa, UCAS process.</p>
                 <div className="dest-badge-strip">
                   <span>UCAS</span>
                   <span>Russell Group</span>
@@ -991,42 +988,12 @@ export default function App() {
               </div>
             </div>
 
-            <div className="destination-card">
-              <div className="dest-image-container">
-                <img src="/dest_singapore.png" alt="Singapore Landmark" className="dest-bg-image" />
-                <span className="flag-badge">🇸🇬</span>
-              </div>
-              <div className="dest-card-content">
-                <h3>Singapore</h3>
-                <p>Singapore - Asia's academic powerhouses NUS, NTU, and SMU offering top business & tech programs.</p>
-                <div className="dest-badge-strip">
-                  <span>NUS / NTU</span>
-                  <span>SMU</span>
-                  <span>Asia Hub</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="destination-card">
-              <div className="dest-image-container">
-                <img src="/dest_netherlands.png" alt="Netherlands Landmark" className="dest-bg-image" />
-                <span className="flag-badge">🇳🇱</span>
-              </div>
-              <div className="dest-card-content">
-                <h3>Netherlands</h3>
-                <p>Netherlands - Highly affordable top-tier English-taught research programs and Nuffic system guidance.</p>
-                <div className="dest-badge-strip">
-                  <span>Nuffic</span>
-                  <span>English taught</span>
-                  <span>Budget-friendly</span>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="destinations-footer glass" style={{ marginTop: '30px' }}>
             <p>
-              We also counsel for additional destinations based on your profile. Book a call to discuss.
+              We also counsel for additional destinations such as Germany, Ireland, Netherlands, and Singapore based on your profile.
+              <br/>Book a call to discuss.
             </p>
           </div>
         </div>
@@ -1131,8 +1098,11 @@ export default function App() {
                             <option value="Canada">Canada</option>
                             <option value="Australia">Australia</option>
                             <option value="UK">United Kingdom</option>
-                            <option value="Singapore">Singapore</option>
+                            <option value="Germany">Germany</option>
+                            <option value="Ireland">Ireland</option>
+                            <option value="France">France</option>
                             <option value="Netherlands">Netherlands</option>
+                            <option value="Singapore">Singapore</option>
                             <option value="Other">Other</option>
                           </select>
                         </div>
