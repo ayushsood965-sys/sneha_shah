@@ -37,7 +37,7 @@ export default function App() {
   const [bookingError, setBookingError] = useState('');
 
   // Server API base URL
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api';
 
   // Admin Portal state
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
