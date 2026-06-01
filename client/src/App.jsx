@@ -117,8 +117,8 @@ export default function App() {
     }
   };
 
-  const handleArchiveInquiry = async (id) => {
-    if (!window.confirm("Are you sure you want to archive this student inquiry?")) return;
+  const handleDeleteInquiry = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this student inquiry?")) return;
     try {
       const res = await fetch(`${API_BASE}/admin/inquiries/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error("Failed to delete inquiry");
@@ -128,8 +128,8 @@ export default function App() {
     }
   };
 
-  const handleArchiveBooking = async (id) => {
-    if (!window.confirm("Are you sure you want to cancel this booking schedule?")) return;
+  const handleDeleteBooking = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this booking schedule?")) return;
     try {
       const res = await fetch(`${API_BASE}/admin/bookings/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error("Failed to delete booking");
@@ -456,8 +456,8 @@ export default function App() {
                               {item.message}
                             </td>
                             <td>
-                              <button className="btn-archive" onClick={() => handleArchiveInquiry(item._id)}>
-                                🗑️ Archive
+                              <button className="btn-archive" onClick={() => handleDeleteInquiry(item._id)}>
+                                🗑️ Delete
                               </button>
                             </td>
                           </tr>
@@ -517,8 +517,8 @@ export default function App() {
                               </span>
                             </td>
                             <td>
-                              <button className="btn-archive" onClick={() => handleArchiveBooking(item._id)}>
-                                🗑️ Archive
+                              <button className="btn-archive" onClick={() => handleDeleteBooking(item._id)}>
+                                🗑️ Delete
                               </button>
                             </td>
                           </tr>

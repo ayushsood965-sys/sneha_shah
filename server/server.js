@@ -35,10 +35,7 @@ connectDB();
 
 // Fallback in-memory DB for smooth local development when MongoDB is not running
 const memoryInquiries = [];
-const memoryBookings = [
-    { name: "Demo User", email: "demo@demo.com", phone: "+91 99999 88888", date: "2026-06-01", timeSlot: "11:00 AM" },
-    { name: "Demo User", email: "demo@demo.com", phone: "+91 99999 88888", date: "2026-06-01", timeSlot: "2:00 PM" }
-];
+const memoryBookings = [];
 
 // Routes
 
@@ -170,6 +167,9 @@ app.delete('/api/admin/inquiries/:id', async (req, res) => {
     try {
         const { id } = req.params;
         if (isDbConnected) {
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(404).json({ error: "Inquiry not found (Invalid ID format)" });
+            }
             const deleted = await Inquiry.findByIdAndDelete(id);
             if (!deleted) {
                 return res.status(404).json({ error: "Inquiry not found" });
@@ -215,6 +215,9 @@ app.delete('/api/admin/bookings/:id', async (req, res) => {
     try {
         const { id } = req.params;
         if (isDbConnected) {
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(404).json({ error: "Booking record not found (Invalid ID format)" });
+            }
             const deleted = await Booking.findByIdAndDelete(id);
             if (!deleted) {
                 return res.status(404).json({ error: "Booking record not found" });
