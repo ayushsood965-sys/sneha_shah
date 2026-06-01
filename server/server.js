@@ -212,23 +212,30 @@ app.get('/api/admin/bookings', async (req, res) => {
 
 // Archive (Delete) a booking slot
 app.delete('/api/admin/bookings/:id', async (req, res) => {
+    console.log("DELETE /api/admin/bookings/:id called with id:", req.params.id);
     try {
         const { id } = req.params;
         if (isDbConnected) {
+            console.log("DB connected, checking ObjectId validity for id:", id);
             if (!mongoose.Types.ObjectId.isValid(id)) {
+                console.warn("Invalid ObjectId format:", id);
                 return res.status(404).json({ error: "Booking record not found (Invalid ID format)" });
             }
             const deleted = await Booking.findByIdAndDelete(id);
+            console.log("Mongoose findByIdAndDelete returned:", deleted);
             if (!deleted) {
                 return res.status(404).json({ error: "Booking record not found" });
             }
             return res.json({ message: "Booking archived successfully" });
         } else {
+            console.log("DB not connected, searching memoryBookings for id:", id);
             const index = memoryBookings.findIndex(b => b._id === id);
             if (index === -1) {
+                console.warn("Booking not found in memory fallback list.");
                 return res.status(404).json({ error: "Booking not found in memory" });
             }
             memoryBookings.splice(index, 1);
+            console.log("Successfully removed booking from memory. Remaining count:", memoryBookings.length);
             return res.json({ message: "Booking archived successfully from memory" });
         }
     } catch (err) {

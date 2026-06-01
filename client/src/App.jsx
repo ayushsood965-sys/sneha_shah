@@ -129,12 +129,20 @@ export default function App() {
   };
 
   const handleDeleteBooking = async (id) => {
+    console.log("handleDeleteBooking called with ID:", id);
     if (!window.confirm("Are you sure you want to delete this booking schedule?")) return;
     try {
+      console.log("Sending DELETE request to:", `${API_BASE}/admin/bookings/${id}`);
       const res = await fetch(`${API_BASE}/admin/bookings/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error("Failed to delete booking");
+      console.log("DELETE response status:", res.status);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("DELETE failed details:", errorData);
+        throw new Error(errorData.error || "Failed to delete booking");
+      }
       setAdminBookings(prev => prev.filter(item => item._id !== id));
     } catch (err) {
+      console.error("handleDeleteBooking caught error:", err);
       alert(err.message);
     }
   };
