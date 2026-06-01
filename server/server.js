@@ -141,7 +141,7 @@ app.get('/api/bookings/busy', async (req, res) => {
 // Admin Login validation
 app.post('/api/admin/login', (req, res) => {
     const { username, password } = req.body;
-    if (username === 'admin' && password === 'admin') {
+    if (username === 'info@edvantageuni.com' && password === 'Jupiter@2210') {
         return res.json({ success: true, token: "edvantage_uni_mock_jwt_token_2026" });
     }
     return res.status(401).json({ error: "Invalid username or password" });

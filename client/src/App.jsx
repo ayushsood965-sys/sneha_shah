@@ -361,16 +361,6 @@ export default function App() {
                 <span className="metric-value">{adminBookings.length}</span>
               </div>
             </div>
-
-            <div className="metric-panel">
-              <div className="metric-icon-slot metric-green">🟢</div>
-              <div className="metric-details">
-                <span className="metric-label">System Mode</span>
-                <span className="metric-value" style={{ fontSize: '1.05rem', fontWeight: 800 }}>
-                  {dbConnected ? 'PROD DATABASE' : 'DEV LOCAL ARRAY'}
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Navigation Tabs */}
