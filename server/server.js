@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import Inquiry from './models/Inquiry.js';
 import Booking from './models/Booking.js';
+import { sendInquiryEmails, sendBookingEmails } from './emailService.js';
 
 dotenv.config();
 
@@ -60,12 +61,16 @@ app.post('/api/inquiry', async (req, res) => {
         if (isDbConnected) {
             const newInquiry = new Inquiry({ name, email, phone, destination, service, message });
             await newInquiry.save();
+            // Send confirmation emails (fire-and-forget)
+            sendInquiryEmails({ name, email, phone, destination, service, message });
             return res.status(201).json({ message: "Inquiry saved successfully", data: newInquiry });
         } else {
             // Local fallback
             const fallbackInquiry = { name, email, phone, destination, service, message, createdAt: new Date(), _id: Date.now().toString() };
             memoryInquiries.push(fallbackInquiry);
             console.log('📝 Inquiry saved to memory fallback:', fallbackInquiry);
+            // Send confirmation emails (fire-and-forget)
+            sendInquiryEmails({ name, email, phone, destination, service, message });
             return res.status(201).json({ message: "Inquiry saved successfully (In-Memory Fallback Mode)", data: fallbackInquiry });
         }
     } catch (err) {
@@ -92,6 +97,8 @@ app.post('/api/booking', async (req, res) => {
 
             const newBooking = new Booking({ name, email, phone, date, timeSlot });
             await newBooking.save();
+            // Send confirmation emails (fire-and-forget)
+            sendBookingEmails({ name, email, phone, date, timeSlot });
             return res.status(201).json({ message: "Booking scheduled successfully", data: newBooking });
         } else {
             // Local fallback check
@@ -103,6 +110,8 @@ app.post('/api/booking', async (req, res) => {
             const fallbackBooking = { name, email, phone, date, timeSlot, createdAt: new Date(), _id: Date.now().toString() };
             memoryBookings.push(fallbackBooking);
             console.log('📅 Appointment scheduled in memory fallback:', fallbackBooking);
+            // Send confirmation emails (fire-and-forget)
+            sendBookingEmails({ name, email, phone, date, timeSlot });
             return res.status(201).json({ message: "Booking scheduled successfully (In-Memory Fallback Mode)", data: fallbackBooking });
         }
     } catch (err) {
