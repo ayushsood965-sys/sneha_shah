@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import Inquiry from './models/Inquiry.js';
 import Booking from './models/Booking.js';
+import Admin from './models/Admin.js';
 import { sendInquiryEmails, sendBookingEmails } from './emailService.js';
 
 dotenv.config();
@@ -21,6 +22,26 @@ app.use(express.json());
 
 // MongoDB Connection with detailed state logs and graceful fallback
 let isDbConnected = false;
+let isAdminSeeded = false;
+
+const seedAdmin = async () => {
+    if (isAdminSeeded) return;
+    try {
+        const count = await Admin.countDocuments();
+        if (count === 0) {
+            const defaultAdmin = new Admin({
+                username: 'info@edvantageuni.com',
+                password: 'Jupiter@2210'
+            });
+            await defaultAdmin.save();
+            console.log('👤 Default admin user seeded successfully.');
+        }
+        isAdminSeeded = true;
+    } catch (err) {
+        console.error('❌ Failed to seed default admin:', err.message);
+    }
+};
+
 const connectDB = async () => {
     if (mongoose.connection.readyState >= 1) {
         isDbConnected = true;
@@ -32,6 +53,7 @@ const connectDB = async () => {
         });
         isDbConnected = true;
         console.log('💚 MongoDB connected successfully.');
+        await seedAdmin();
     } catch (err) {
         isDbConnected = false;
         console.error('⚠️ MongoDB connection failed:', err.message);
@@ -156,12 +178,33 @@ app.get('/api/bookings/busy', async (req, res) => {
 // --- ADMIN SYSTEM ROUTES ---
 
 // Admin Login validation
-app.post('/api/admin/login', (req, res) => {
-    const { username, password } = req.body;
-    if (username === 'info@edvantageuni.com' && password === 'Jupiter@2210') {
-        return res.json({ success: true, token: "edvantage_uni_mock_jwt_token_2026" });
+app.post('/api/admin/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({ error: "Username and password are required" });
+        }
+
+        if (isDbConnected) {
+            const admin = await Admin.findOne({ username: username.toLowerCase() });
+            if (admin) {
+                const isMatch = await admin.comparePassword(password);
+                if (isMatch) {
+                    return res.json({ success: true, token: "edvantage_uni_mock_jwt_token_2026" });
+                }
+            }
+            return res.status(401).json({ error: "Invalid username or password" });
+        } else {
+            // Fallback mode if DB is disconnected (for local/temporary setup)
+            if (username === 'info@edvantageuni.com' && password === 'Jupiter@2210') {
+                return res.json({ success: true, token: "edvantage_uni_mock_jwt_token_2026" });
+            }
+            return res.status(401).json({ error: "Invalid username or password (Fallback Mode)" });
+        }
+    } catch (err) {
+        console.error("Admin login error:", err);
+        res.status(500).json({ error: "Internal server error during login" });
     }
-    return res.status(401).json({ error: "Invalid username or password" });
 });
 
 // Fetch all inquiries
