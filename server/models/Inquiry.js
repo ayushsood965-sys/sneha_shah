@@ -19,8 +19,7 @@ const inquirySchema = new mongoose.Schema({
     },
     destination: {
         type: String,
-        required: true,
-        enum: ['USA', 'Canada', 'Australia', 'UK', 'Singapore', 'Netherlands', 'Other']
+        required: true
     },
     service: {
         type: String,

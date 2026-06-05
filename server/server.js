@@ -22,17 +22,29 @@ app.use(express.json());
 // MongoDB Connection with detailed state logs and graceful fallback
 let isDbConnected = false;
 const connectDB = async () => {
+    if (mongoose.connection.readyState >= 1) {
+        isDbConnected = true;
+        return;
+    }
     try {
-        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/edvantage_uni');
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/edvantage_uni', {
+            serverSelectionTimeoutMS: 5000
+        });
         isDbConnected = true;
         console.log('💚 MongoDB connected successfully.');
     } catch (err) {
         isDbConnected = false;
         console.error('⚠️ MongoDB connection failed:', err.message);
-        console.log('💡 Note: Server will continue running using in-memory fallback array for bookings and inquiries.');
     }
 };
-connectDB();
+
+// Middleware to ensure DB connection attempt on every request (crucial for Serverless Vercel environment)
+const ensureDBConnection = async (req, res, next) => {
+    await connectDB();
+    next();
+};
+
+app.use(ensureDBConnection);
 
 // Fallback in-memory DB for smooth local development when MongoDB is not running
 const memoryInquiries = [];
@@ -61,17 +73,15 @@ app.post('/api/inquiry', async (req, res) => {
         if (isDbConnected) {
             const newInquiry = new Inquiry({ name, email, phone, destination, service, message });
             await newInquiry.save();
-            // Send confirmation emails (fire-and-forget)
-            sendInquiryEmails({ name, email, phone, destination, service, message });
-            return res.status(201).json({ message: "Inquiry saved successfully", data: newInquiry });
+            const emailSent = await sendInquiryEmails({ name, email, phone, destination, service, message });
+            return res.status(201).json({ message: "Inquiry saved successfully", emailSent, data: newInquiry });
         } else {
             // Local fallback
             const fallbackInquiry = { name, email, phone, destination, service, message, createdAt: new Date(), _id: Date.now().toString() };
             memoryInquiries.push(fallbackInquiry);
             console.log('📝 Inquiry saved to memory fallback:', fallbackInquiry);
-            // Send confirmation emails (fire-and-forget)
-            sendInquiryEmails({ name, email, phone, destination, service, message });
-            return res.status(201).json({ message: "Inquiry saved successfully (In-Memory Fallback Mode)", data: fallbackInquiry });
+            const emailSent = await sendInquiryEmails({ name, email, phone, destination, service, message });
+            return res.status(201).json({ message: "Inquiry saved successfully (In-Memory Fallback Mode)", emailSent, data: fallbackInquiry });
         }
     } catch (err) {
         console.error("Error saving inquiry:", err);
@@ -97,9 +107,8 @@ app.post('/api/booking', async (req, res) => {
 
             const newBooking = new Booking({ name, email, phone, date, timeSlot });
             await newBooking.save();
-            // Send confirmation emails (fire-and-forget)
-            sendBookingEmails({ name, email, phone, date, timeSlot });
-            return res.status(201).json({ message: "Booking scheduled successfully", data: newBooking });
+            const emailSent = await sendBookingEmails({ name, email, phone, date, timeSlot });
+            return res.status(201).json({ message: "Booking scheduled successfully", emailSent, data: newBooking });
         } else {
             // Local fallback check
             const alreadyBooked = memoryBookings.some(b => b.date === date && b.timeSlot === timeSlot);
@@ -110,9 +119,8 @@ app.post('/api/booking', async (req, res) => {
             const fallbackBooking = { name, email, phone, date, timeSlot, createdAt: new Date(), _id: Date.now().toString() };
             memoryBookings.push(fallbackBooking);
             console.log('📅 Appointment scheduled in memory fallback:', fallbackBooking);
-            // Send confirmation emails (fire-and-forget)
-            sendBookingEmails({ name, email, phone, date, timeSlot });
-            return res.status(201).json({ message: "Booking scheduled successfully (In-Memory Fallback Mode)", data: fallbackBooking });
+            const emailSent = await sendBookingEmails({ name, email, phone, date, timeSlot });
+            return res.status(201).json({ message: "Booking scheduled successfully (In-Memory Fallback Mode)", emailSent, data: fallbackBooking });
         }
     } catch (err) {
         console.error("Error creating booking:", err);

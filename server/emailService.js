@@ -285,8 +285,10 @@ export async function sendInquiryEmails(data) {
             html: buildCounselorInquiryEmail(data)
         });
         console.log(`📧 Inquiry notification sent to counselor via Mailgun: ${notifyEmail}. ID: ${counselorRes.id}. Msg: ${counselorRes.message}`);
+        return true;
     } catch (err) {
         console.error('❌ Failed to send inquiry emails via Mailgun:', err.message || err);
+        return false;
     }
 }
 
@@ -317,8 +319,10 @@ export async function sendBookingEmails(data) {
             html: buildCounselorBookingEmail(data)
         });
         console.log(`📧 Booking notification sent to counselor via Mailgun: ${notifyEmail}. ID: ${counselorRes.id}. Msg: ${counselorRes.message}`);
+        return true;
     } catch (err) {
         console.error('❌ Failed to send booking emails via Mailgun:', err.message || err);
+        return false;
     }
 }
 

@@ -36,9 +36,25 @@ export default function App() {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState('');
+  const [bookingMailSent, setBookingMailSent] = useState(true);
+  const [inquiryMailSent, setInquiryMailSent] = useState(true);
 
   // Server API base URL
   const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api';
+
+  // Safe JSON Parsing helper to avoid "Unexpected end of JSON input" errors
+  const safeParseJson = async (response) => {
+    try {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+      }
+      return null;
+    } catch (e) {
+      console.warn("JSON parsing failed, returning null:", e);
+      return null;
+    }
+  };
 
   // Admin Portal state
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -69,7 +85,7 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: adminUsername, password: adminPassword })
       });
-      const data = await res.json();
+      const data = await safeParseJson(res) || {};
       if (!res.ok) {
         throw new Error(data.error || 'Authentication failed');
       }
@@ -97,20 +113,26 @@ export default function App() {
     try {
       const statusRes = await fetch(`${API_BASE}/status`);
       if (statusRes.ok) {
-        const statusData = await statusRes.json();
-        setDbConnected(statusData.databaseConnected);
+        const statusData = await safeParseJson(statusRes);
+        if (statusData) {
+          setDbConnected(statusData.databaseConnected);
+        }
       }
 
       const inquiriesRes = await fetch(`${API_BASE}/admin/inquiries`);
       if (inquiriesRes.ok) {
-        const inquiriesData = await inquiriesRes.json();
-        setAdminInquiries(inquiriesData.inquiries || []);
+        const inquiriesData = await safeParseJson(inquiriesRes);
+        if (inquiriesData) {
+          setAdminInquiries(inquiriesData.inquiries || []);
+        }
       }
 
       const bookingsRes = await fetch(`${API_BASE}/admin/bookings`);
       if (bookingsRes.ok) {
-        const bookingsData = await bookingsRes.json();
-        setAdminBookings(bookingsData.bookings || []);
+        const bookingsData = await safeParseJson(bookingsRes);
+        if (bookingsData) {
+          setAdminBookings(bookingsData.bookings || []);
+        }
       }
     } catch (err) {
       setAdminDataError('Failed to synchronize dashboard data.');
@@ -139,7 +161,7 @@ export default function App() {
       const res = await fetch(`${API_BASE}/admin/bookings/${id}`, { method: 'DELETE' });
       console.log("DELETE response status:", res.status);
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
+        const errorData = await safeParseJson(res) || {};
         console.error("DELETE failed details:", errorData);
         throw new Error(errorData.error || "Failed to delete booking");
       }
@@ -190,7 +212,13 @@ export default function App() {
   useEffect(() => {
     if (selectedDate) {
       fetch(`${API_BASE}/bookings/busy?date=${selectedDate}`)
-        .then(res => res.json())
+        .then(res => {
+          const contentType = res.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            return res.json();
+          }
+          throw new Error("Response is not JSON");
+        })
         .then(data => {
           if (data && data.busySlots) {
             setBusySlots(data.busySlots);
@@ -216,14 +244,16 @@ export default function App() {
         body: JSON.stringify(inquiryData)
       });
 
-      const data = await response.json();
+      const data = await safeParseJson(response) || {};
       if (response.ok) {
+        setInquiryMailSent(data.emailSent !== false);
         setInquirySuccess(true);
       } else {
         setInquiryError(data.error || 'Failed to submit inquiry.');
       }
     } catch (err) {
       console.warn('Backend server not running, simulating local response:', err);
+      setInquiryMailSent(false);
       setInquirySuccess(true);
     } finally {
       setInquiryLoading(false);
@@ -253,8 +283,9 @@ export default function App() {
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
+      const data = await safeParseJson(response) || {};
       if (response.ok) {
+        setBookingMailSent(data.emailSent !== false);
         setBookingSuccess(true);
       } else if (response.status === 409) {
         setBookingError('This time slot has just been booked by someone else! Please choose another slot.');
@@ -263,6 +294,7 @@ export default function App() {
       }
     } catch (err) {
       console.warn('Backend server not running, simulating local response:', err);
+      setBookingMailSent(false);
       setBookingSuccess(true);
     } finally {
       setBookingLoading(false);
@@ -311,6 +343,7 @@ export default function App() {
     setBookingDetails({ name: '', email: '', phone: '' });
     setBookingSuccess(false);
     setBookingError('');
+    setBookingMailSent(true);
   };
 
   const availableSlots = [
@@ -1185,7 +1218,16 @@ export default function App() {
                       <div className="success-icon">✓</div>
                       <h3>Inquiry Sent!</h3>
                       <p>Thank you! Sneha will analyze your profile and reach out within 24 hours.</p>
-                      <button className="btn btn-secondary btn-sm" onClick={() => {
+                      {inquiryMailSent ? (
+                        <p className="sub-text" style={{ color: '#10b981', fontWeight: 600, fontSize: '0.88rem', marginTop: '12px' }}>
+                          📧 An email confirmation has been sent to {inquiryData.email} with the details.
+                        </p>
+                      ) : (
+                        <p className="sub-text" style={{ color: '#f59e0b', fontWeight: 600, fontSize: '0.88rem', marginTop: '12px' }}>
+                          ⚠️ Inquiry saved, but we failed to send the confirmation email to {inquiryData.email}.
+                        </p>
+                      )}
+                      <button className="btn btn-secondary btn-sm" style={{ marginTop: '16px' }} onClick={() => {
                         setInquirySuccess(false);
                         setInquiryData({ name: '', email: '', phone: '', destination: '', service: '', message: '' });
                       }}>
@@ -1302,7 +1344,15 @@ export default function App() {
                       <p style={{ fontWeight: 700, color: '#6366f1', margin: '8px 0 20px 0', fontSize: '1.1rem' }}>
                         {selectedDate} at {selectedSlot}
                       </p>
-                      <p className="sub-text">We've sent an invitation and a meeting link to {bookingDetails.email}.</p>
+                      {bookingMailSent ? (
+                        <p className="sub-text" style={{ color: '#10b981', fontWeight: 600, fontSize: '0.88rem', margin: '12px 0' }}>
+                          📧 An email confirmation has been sent to {bookingDetails.email} with the details.
+                        </p>
+                      ) : (
+                        <p className="sub-text" style={{ color: '#f59e0b', fontWeight: 600, fontSize: '0.88rem', margin: '12px 0' }}>
+                          ⚠️ Booking confirmed, but we failed to send the confirmation email to {bookingDetails.email}. Please save your slot details.
+                        </p>
+                      )}
                       <button className="btn btn-secondary btn-sm" onClick={resetScheduler}>
                         Book another slot
                       </button>
