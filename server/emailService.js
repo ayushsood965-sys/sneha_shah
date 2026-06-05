@@ -1,30 +1,27 @@
-import nodemailer from 'nodemailer';
+import FormData from 'form-data';
+import Mailgun from 'mailgun.js';
 
-// ─── SMTP Transporter (lazy-initialized) ────────────────────────
-let _transporter = null;
+// ─── Mailgun client (lazy-initialized) ──────────────────────────
+let _mgClient = null;
 
-function getTransporter() {
-    if (!_transporter) {
-        _transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: parseInt(process.env.SMTP_PORT) || 587,
-            secure: false, // TLS
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS
-            }
+function getMailgunClient() {
+    if (!_mgClient) {
+        const mailgun = new Mailgun(FormData);
+        _mgClient = mailgun.client({
+            username: 'api',
+            key: process.env.MAILGUN_API_KEY
         });
-
-        // Verify SMTP connection
-        _transporter.verify()
-            .then(() => console.log('📧 SMTP connection verified — Mailjet ready.'))
-            .catch(err => console.warn('⚠️ SMTP connection check failed:', err.message));
+        console.log('🔫 Mailgun API client initialized.');
     }
-    return _transporter;
+    return _mgClient;
+}
+
+function getMailgunDomain() {
+    return process.env.MAILGUN_DOMAIN;
 }
 
 function getFrom() {
-    return `"${process.env.SMTP_FROM_NAME || 'EdVantage Uni'}" <${process.env.SMTP_FROM_EMAIL || 'info@edvantageuni.com'}>`;
+    return `"${process.env.SMTP_FROM_NAME || 'EdVantage Uni'}" <${process.env.SMTP_FROM_EMAIL}>`;
 }
 
 function getNotifyEmail() {
@@ -266,29 +263,30 @@ function buildCounselorBookingEmail(data) {
  */
 export async function sendInquiryEmails(data) {
     try {
-        const mailer = getTransporter();
+        const client = getMailgunClient();
+        const domain = getMailgunDomain();
         const from = getFrom();
         const notifyEmail = getNotifyEmail();
 
         // Email to student
-        const studentInfo = await mailer.sendMail({
+        const studentRes = await client.messages.create(domain, {
             from,
-            to: data.email,
+            to: [data.email],
             subject: '✅ Inquiry Received — EdVantage Uni',
             html: buildStudentInquiryEmail(data)
         });
-        console.log(`📧 Inquiry confirmation sent to student: ${data.email}. Message ID: ${studentInfo.messageId}. Response: ${studentInfo.response}`);
+        console.log(`📧 Inquiry confirmation sent to student via Mailgun: ${data.email}. ID: ${studentRes.id}. Msg: ${studentRes.message}`);
 
         // Email to counselor
-        const counselorInfo = await mailer.sendMail({
+        const counselorRes = await client.messages.create(domain, {
             from,
-            to: notifyEmail,
+            to: [notifyEmail],
             subject: `📩 New Inquiry from ${data.name} — ${data.destination}`,
             html: buildCounselorInquiryEmail(data)
         });
-        console.log(`📧 Inquiry notification sent to counselor: ${notifyEmail}. Message ID: ${counselorInfo.messageId}. Response: ${counselorInfo.response}`);
+        console.log(`📧 Inquiry notification sent to counselor via Mailgun: ${notifyEmail}. ID: ${counselorRes.id}. Msg: ${counselorRes.message}`);
     } catch (err) {
-        console.error('❌ Failed to send inquiry emails:', err.message);
+        console.error('❌ Failed to send inquiry emails via Mailgun:', err.message || err);
     }
 }
 
@@ -297,28 +295,30 @@ export async function sendInquiryEmails(data) {
  */
 export async function sendBookingEmails(data) {
     try {
-        const mailer = getTransporter();
+        const client = getMailgunClient();
+        const domain = getMailgunDomain();
         const from = getFrom();
         const notifyEmail = getNotifyEmail();
 
         // Email to student
-        const studentInfo = await mailer.sendMail({
+        const studentRes = await client.messages.create(domain, {
             from,
-            to: data.email,
+            to: [data.email],
             subject: `📅 Discovery Call Confirmed — ${data.date} at ${data.timeSlot} (IST)`,
             html: buildStudentBookingEmail(data)
         });
-        console.log(`📧 Booking confirmation sent to student: ${data.email}. Message ID: ${studentInfo.messageId}. Response: ${studentInfo.response}`);
+        console.log(`📧 Booking confirmation sent to student via Mailgun: ${data.email}. ID: ${studentRes.id}. Msg: ${studentRes.message}`);
 
         // Email to counselor
-        const counselorInfo = await mailer.sendMail({
+        const counselorRes = await client.messages.create(domain, {
             from,
-            to: notifyEmail,
+            to: [notifyEmail],
             subject: `📅 New Booking: ${data.name} — ${data.date} at ${data.timeSlot}`,
             html: buildCounselorBookingEmail(data)
         });
-        console.log(`📧 Booking notification sent to counselor: ${notifyEmail}. Message ID: ${counselorInfo.messageId}. Response: ${counselorInfo.response}`);
+        console.log(`📧 Booking notification sent to counselor via Mailgun: ${notifyEmail}. ID: ${counselorRes.id}. Msg: ${counselorRes.message}`);
     } catch (err) {
-        console.error('❌ Failed to send booking emails:', err.message);
+        console.error('❌ Failed to send booking emails via Mailgun:', err.message || err);
     }
 }
+
