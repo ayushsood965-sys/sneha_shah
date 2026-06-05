@@ -506,7 +506,7 @@ export default function App() {
                             <td>
                               <strong style={{ color: 'var(--primary)' }}>📅 {item.date}</strong>
                               <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent)', marginTop: '2px' }}>
-                                🕒 {item.timeSlot} (AEST)
+                                🕒 {item.timeSlot} (IST)
                               </div>
                             </td>
                             <td>
@@ -566,7 +566,7 @@ export default function App() {
 
           <div className={`nav-menu ${mobileMenuOpen ? 'open' : ''}`}>
             <a href="#home" className={`nav-link ${activeSection === 'home' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Home</a>
-            <a href="#about" className={`nav-link ${activeSection === 'about' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>About Sneha</a>
+            <a href="#about" className={`nav-link ${activeSection === 'about' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Meet the Counsellor</a>
             <a href="#services" className={`nav-link ${activeSection === 'services' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Services</a>
             <a href="#destinations" className={`nav-link ${activeSection === 'destinations' ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Destinations</a>
             <a href="#contact" className="nav-btn-nav" onClick={() => { setMobileMenuOpen(false); setActiveTab('calendar'); }}>Book Free Call</a>
@@ -604,19 +604,20 @@ export default function App() {
           </div>
 
           <div className="hero-visual">
-            <div className="morph-blob">
+            <div className="hero-image-frame">
               <img 
-                src="/counselor_avatar.png" 
-                alt="Sneha Shah - Study Abroad Counselor" 
-                className="morph-image"
+                src="/hero_global_education.png" 
+                alt="Graduate celebrating with international flags - Global Education" 
+                className="hero-scene-image"
               />
+              <div className="hero-image-glow"></div>
             </div>
           </div>
         </div>
 
         {/* Trust bar */}
         <div className="trust-bar">
-          <div className="trust-bar-label">3,000+ Students Guided</div>
+          <div className="trust-bar-label">1,000+ Students Guided</div>
           <div className="trust-ticker-container">
             <div className="trust-ticker">
               <span className="ticker-item">🇺🇸 USA</span>
@@ -711,7 +712,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Page 2 - About Sneha Shah */}
+      {/* Page 2 - Meet the Counsellor */}
       <section id="about" className="about-section">
         <div className="section-container">
           <div className="about-grid">
@@ -775,11 +776,7 @@ export default function App() {
               </div>
               <div className="credential-item glass">
                 <div className="cred-icon">👥</div>
-                <p><strong>3,000+</strong><br/>Student Profiles</p>
-              </div>
-              <div className="credential-item glass">
-                <div className="cred-icon">🇦🇺</div>
-                <p><strong>Australia Based</strong><br/>Immigrated 2024</p>
+                <p><strong>1,000+</strong><br/>Student Profiles</p>
               </div>
             </div>
           </div>
@@ -1277,14 +1274,15 @@ export default function App() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logo-grad-f-simple)" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinejoin="round"/>
                   <path d="M2 17L12 22L22 17" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 12L12 17L22 12" stroke="url(#logo-grad-f-stroke-simple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <defs>
                     <linearGradient id="logo-grad-f-simple" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#8b5cf6"/>
-                      <stop offset="1" stopColor="#ec4899"/>
+                      <stop stopColor="#1e3a8a"/>
+                      <stop offset="1" stopColor="#2563eb"/>
                     </linearGradient>
                     <linearGradient id="logo-grad-f-stroke-simple" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#a855f7"/>
-                      <stop offset="1" stopColor="#6366f1"/>
+                      <stop stopColor="#1d4ed8"/>
+                      <stop offset="1" stopColor="#3b82f6"/>
                     </linearGradient>
                   </defs>
                 </svg>
@@ -1297,21 +1295,20 @@ export default function App() {
           <div className="footer-links-group">
             <h4>Explore</h4>
             <a href="#home">Home</a>
-            <a href="#about">About Sneha</a>
+            <a href="#about">Meet the Counsellor</a>
             <a href="#services">Services</a>
             <a href="#destinations">Destinations</a>
           </div>
 
           <div className="footer-links-group">
             <h4>Contact Info</h4>
-            <p>📍 Based in Australia (immigrated 2024)</p>
             <p>📧 <a href="mailto:info@edvantageuni.com" style={{ color: '#94a3b8', textDecoration: 'none' }}>info@edvantageuni.com</a></p>
-            <p>🕒 Mon - Sat: 9 AM - 6 PM (AEST)</p>
+            <p>🕒 Mon - Sat: 9 AM - 6 PM (IST)</p>
           </div>
         </div>
 
         <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
-          <p style={{ margin: 0 }}>&copy; 2026 EdVantage Uni. All rights reserved. Designed with ❤️ for Sneha Shah.</p>
+          <p style={{ margin: 0 }}>&copy; 2026 EdVantage Uni. All rights reserved.</p>
           <button 
             className="footer-admin-link" 
             onClick={() => setIsAdminModalOpen(true)} 
