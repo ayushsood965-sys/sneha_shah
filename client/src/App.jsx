@@ -5,6 +5,7 @@ export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [showAdminDashboard, setShowAdminDashboard] = useState(true);
 
   // Contact Widget Tab selection
   const [activeTab, setActiveTab] = useState('form'); // 'form' or 'calendar'
@@ -73,6 +74,7 @@ export default function App() {
         throw new Error(data.error || 'Authentication failed');
       }
       setIsAdminLoggedIn(true);
+      setShowAdminDashboard(true);
       localStorage.setItem('isAdminLoggedIn', 'true');
       setIsAdminModalOpen(false);
       fetchAdminData();
@@ -85,6 +87,7 @@ export default function App() {
 
   const handleAdminLogout = () => {
     setIsAdminLoggedIn(false);
+    setShowAdminDashboard(true);
     localStorage.removeItem('isAdminLoggedIn');
   };
 
@@ -319,7 +322,7 @@ export default function App() {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  if (isAdminLoggedIn) {
+  if (isAdminLoggedIn && showAdminDashboard) {
     return (
       <div className="admin-dashboard-overlay" style={{ position: 'relative', minHeight: '100vh', zIndex: 1, paddingBottom: '60px', background: 'var(--gradient-bg)' }}>
         <div className="admin-dashboard-container">
@@ -346,6 +349,22 @@ export default function App() {
             </div>
             
             <div className="admin-controls">
+              <button className="btn-admin-view-site" onClick={() => setShowAdminDashboard(false)} style={{
+                background: 'rgba(37, 99, 235, 0.1)',
+                border: '1px solid rgba(37, 99, 235, 0.25)',
+                padding: '8px 18px',
+                borderRadius: '10px',
+                color: 'var(--accent)',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                🌐 View Site
+              </button>
               <button className="btn-admin-logout" onClick={handleAdminLogout}>
                 Log Out
               </button>
@@ -579,6 +598,37 @@ export default function App() {
           </button>
         </div>
       </nav>
+
+      {/* Admin floating bar - shown when admin is viewing the site */}
+      {isAdminLoggedIn && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 9999,
+          display: 'flex',
+          gap: '10px',
+          alignItems: 'center'
+        }}>
+          <button onClick={() => setShowAdminDashboard(true)} style={{
+            background: 'var(--gradient-primary)',
+            color: '#fff',
+            border: 'none',
+            padding: '12px 22px',
+            borderRadius: '14px',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            boxShadow: '0 8px 24px rgba(30, 58, 138, 0.35)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            transition: 'all 0.2s ease'
+          }}>
+            🛠️ Back to Dashboard
+          </button>
+        </div>
+      )}
 
       {/* Page 1 - Home */}
       <section id="home" className="hero-section">
