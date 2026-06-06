@@ -1216,17 +1216,8 @@ export default function App() {
                   ) : (
                     <div className="success-message">
                       <div className="success-icon">✓</div>
-                      <h3>Inquiry Sent!</h3>
-                      <p>Thank you! Sneha will analyze your profile and reach out within 24 hours.</p>
-                      {inquiryMailSent ? (
-                        <p className="sub-text" style={{ color: '#10b981', fontWeight: 600, fontSize: '0.88rem', marginTop: '12px' }}>
-                          📧 An email confirmation has been sent to {inquiryData.email} with the details.
-                        </p>
-                      ) : (
-                        <p className="sub-text" style={{ color: '#f59e0b', fontWeight: 600, fontSize: '0.88rem', marginTop: '12px' }}>
-                          ⚠️ Inquiry saved, but we failed to send the confirmation email to {inquiryData.email}.
-                        </p>
-                      )}
+                      <h3>Inquiry Sent Successfully!</h3>
+                      <p>Thank you for reaching out! Sneha will analyze your profile and get back to you within 24 hours.</p>
                       <button className="btn btn-secondary btn-sm" style={{ marginTop: '16px' }} onClick={() => {
                         setInquirySuccess(false);
                         setInquiryData({ name: '', email: '', phone: '', destination: '', service: '', message: '' });
@@ -1340,11 +1331,11 @@ export default function App() {
                     <div className="success-message">
                       <div className="success-icon">📅</div>
                       <h3>Discovery Call Booked!</h3>
-                      <p>Your free 30-minute study counseling session with Sneha Shah is scheduled for:</p>
-                      <p style={{ fontWeight: 700, color: '#6366f1', margin: '8px 0 20px 0', fontSize: '1.1rem' }}>
+                      <p>Your free 30-minute counseling session with Sneha Shah has been confirmed for:</p>
+                      <p style={{ fontWeight: 700, color: '#6366f1', margin: '8px 0 12px 0', fontSize: '1.1rem' }}>
                         {selectedDate} at {selectedSlot}
                       </p>
-                      <p className="sub-text">We've sent an invitation and a meeting link to {bookingDetails.email}.</p>
+                      <p className="sub-text">You will receive a confirmation with meeting details shortly.</p>
                       <button className="btn btn-secondary btn-sm" onClick={resetScheduler}>
                         Book another slot
                       </button>
