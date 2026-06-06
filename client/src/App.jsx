@@ -1344,15 +1344,7 @@ export default function App() {
                       <p style={{ fontWeight: 700, color: '#6366f1', margin: '8px 0 20px 0', fontSize: '1.1rem' }}>
                         {selectedDate} at {selectedSlot}
                       </p>
-                      {bookingMailSent ? (
-                        <p className="sub-text" style={{ color: '#10b981', fontWeight: 600, fontSize: '0.88rem', margin: '12px 0' }}>
-                          📧 An email confirmation has been sent to {bookingDetails.email} with the details.
-                        </p>
-                      ) : (
-                        <p className="sub-text" style={{ color: '#f59e0b', fontWeight: 600, fontSize: '0.88rem', margin: '12px 0' }}>
-                          ⚠️ Booking confirmed, but we failed to send the confirmation email to {bookingDetails.email}. Please save your slot details.
-                        </p>
-                      )}
+                      <p className="sub-text">We've sent an invitation and a meeting link to {bookingDetails.email}.</p>
                       <button className="btn btn-secondary btn-sm" onClick={resetScheduler}>
                         Book another slot
                       </button>

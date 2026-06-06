@@ -42,22 +42,32 @@ const seedAdmin = async () => {
     }
 };
 
+let dbConnectPromise = null;
+
 const connectDB = async () => {
-    if (mongoose.connection.readyState >= 1) {
+    // If fully connected, we are good
+    if (mongoose.connection.readyState === 1) {
         isDbConnected = true;
         return;
     }
-    try {
-        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/edvantage_uni', {
-            serverSelectionTimeoutMS: 5000
+
+    // If there isn't an ongoing connection attempt, start one
+    if (!dbConnectPromise) {
+        dbConnectPromise = mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/edvantage_uni', {
+            serverSelectionTimeoutMS: 10000 // Increased timeout for serverless cold starts
+        }).then(() => {
+            console.log('💚 MongoDB connected successfully.');
+            isDbConnected = true;
+            return seedAdmin(); // Wait for seeding before proceeding
+        }).catch(err => {
+            console.error('⚠️ MongoDB connection failed:', err.message);
+            isDbConnected = false;
+            dbConnectPromise = null; // Reset so next request can retry
         });
-        isDbConnected = true;
-        console.log('💚 MongoDB connected successfully.');
-        await seedAdmin();
-    } catch (err) {
-        isDbConnected = false;
-        console.error('⚠️ MongoDB connection failed:', err.message);
     }
+
+    // Wait for the connection promise to resolve or reject
+    await dbConnectPromise;
 };
 
 // Middleware to ensure DB connection attempt on every request (crucial for Serverless Vercel environment)
@@ -309,7 +319,12 @@ app.get('/', (req, res) => {
     res.send('EdVantage Uni API running smoothly.');
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`🚀 EdVantage Uni Server is active at http://localhost:${PORT}`);
-});
+// Start Server (only when running locally, not on Vercel serverless)
+if (process.env.VERCEL !== '1') {
+    app.listen(PORT, () => {
+        console.log(`🚀 EdVantage Uni Server is active at http://localhost:${PORT}`);
+    });
+}
+
+// Export for Vercel serverless
+export default app;
