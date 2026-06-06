@@ -106,6 +106,8 @@ app.post('/api/inquiry', async (req, res) => {
             const newInquiry = new Inquiry({ name, email, phone, destination, service, message });
             await newInquiry.save();
             const emailSent = await sendInquiryEmails({ name, email, phone, destination, service, message });
+            newInquiry.emailSent = !!emailSent;
+            await newInquiry.save();
             return res.status(201).json({ message: "Inquiry saved successfully", emailSent, data: newInquiry });
         } else {
             // Local fallback
@@ -140,6 +142,8 @@ app.post('/api/booking', async (req, res) => {
             const newBooking = new Booking({ name, email, phone, date, timeSlot });
             await newBooking.save();
             const emailSent = await sendBookingEmails({ name, email, phone, date, timeSlot });
+            newBooking.emailSent = !!emailSent;
+            await newBooking.save();
             return res.status(201).json({ message: "Booking scheduled successfully", emailSent, data: newBooking });
         } else {
             // Local fallback check

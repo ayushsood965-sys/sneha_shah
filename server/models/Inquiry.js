@@ -34,6 +34,10 @@ const inquirySchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    emailSent: {
+        type: Boolean,
+        default: false
     }
 });
 
