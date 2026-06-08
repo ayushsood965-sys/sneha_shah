@@ -1182,7 +1182,7 @@ export default function App() {
                           <label>Phone Number</label>
                           <input 
                             type="tel" 
-                            placeholder="+91 98765 43210" 
+                            placeholder="Enter your mobile number" 
                             required 
                             value={inquiryData.phone}
                             onChange={(e) => setInquiryData({ ...inquiryData, phone: e.target.value })}
@@ -1241,7 +1241,7 @@ export default function App() {
                     <div className="success-message">
                       <div className="success-icon">✓</div>
                       <h3>Inquiry Sent Successfully!</h3>
-                      <p>Thank you for reaching out! Sneha will analyze your profile and get back to you within 24 hours.</p>
+                      <p>Thank you for reaching out! The counselor will review your profile and get back to you within 24 hours.</p>
                       <button className="btn btn-secondary btn-sm" style={{ marginTop: '16px' }} onClick={() => {
                         setInquirySuccess(false);
                         setInquiryData({ name: '', email: '', phone: '', destination: '', service: '', message: '' });
@@ -1338,7 +1338,7 @@ export default function App() {
                           <div className="form-group">
                             <input 
                               type="tel" 
-                              placeholder="Your Phone Number" 
+                              placeholder="Enter your mobile number" 
                               required 
                               value={bookingDetails.phone}
                               onChange={(e) => setBookingDetails({ ...bookingDetails, phone: e.target.value })}
@@ -1355,7 +1355,7 @@ export default function App() {
                     <div className="success-message">
                       <div className="success-icon">📅</div>
                       <h3>Discovery Call Booked!</h3>
-                      <p>Your free 30-minute counseling session with Sneha Shah has been confirmed for:</p>
+                      <p>Your free 30-minute counseling session with our counselor has been confirmed for:</p>
                       <p style={{ fontWeight: 700, color: '#6366f1', margin: '8px 0 12px 0', fontSize: '1.1rem' }}>
                         {selectedDate} at {selectedSlot}
                       </p>
@@ -1410,7 +1410,6 @@ export default function App() {
           <div className="footer-links-group">
             <h4>Contact Info</h4>
             <p>📧 <a href="mailto:info@edvantageuni.com" style={{ color: '#94a3b8', textDecoration: 'none' }}>info@edvantageuni.com</a></p>
-            <p>🕒 Mon - Sat: 9 AM - 6 PM (IST)</p>
           </div>
         </div>
 

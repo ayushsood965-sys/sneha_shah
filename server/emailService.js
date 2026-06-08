@@ -73,7 +73,7 @@ function wrapTemplate(bodyContent) {
                       © ${new Date().getFullYear()} EdVantage Uni. All rights reserved.
                     </p>
                     <p style="margin:0;color:#94a3b8;font-size:11px;">
-                      📧 info@edvantageuni.com &nbsp;|&nbsp; 🕒 Mon - Sat: 9 AM - 6 PM (IST)
+                      📧 info@edvantageuni.com
                     </p>
                   </td>
                 </tr>
@@ -135,7 +135,7 @@ function buildStudentInquiryEmail(data) {
 
     <div style="background:linear-gradient(135deg,rgba(30,58,138,0.06),rgba(37,99,235,0.08));border:1px solid rgba(30,58,138,0.12);border-radius:10px;padding:16px 20px;margin-bottom:8px;">
       <p style="margin:0;color:#1e3a8a;font-size:13px;font-weight:600;">
-        💡 <strong>What's next?</strong> Our counselor Sneha Shah will review your profile and reach out to you personally.
+        💡 <strong>What's next?</strong> Our counselor will review your profile and reach out to you personally.
       </p>
     </div>`;
 
