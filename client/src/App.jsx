@@ -482,7 +482,6 @@ export default function App() {
                           <th>Contact Info</th>
                           <th>Requested Area</th>
                           <th>Message / Inquiry Details</th>
-                          <th>Email Status</th>
                           <th>Action</th>
                         </tr>
                       </thead>
@@ -505,17 +504,6 @@ export default function App() {
                             </td>
                             <td style={{ maxWidth: '350px', wordBreak: 'break-word' }}>
                               {item.message}
-                            </td>
-                            <td>
-                              {item.emailSent ? (
-                                <span className="dash-tag" style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
-                                  ✓ Delivered
-                                </span>
-                              ) : (
-                                <span className="dash-tag" style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.15)' }}>
-                                  ✗ Failed
-                                </span>
-                              )}
                             </td>
                             <td>
                               <button className="btn-archive" onClick={() => handleDeleteInquiry(item._id)}>
@@ -554,7 +542,6 @@ export default function App() {
                           <th>Contact Details</th>
                           <th>Appointment Slot</th>
                           <th>Status</th>
-                          <th>Email Status</th>
                           <th>Action</th>
                         </tr>
                       </thead>
@@ -578,17 +565,6 @@ export default function App() {
                               <span className="dash-tag" style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
                                 ✓ Scheduled
                               </span>
-                            </td>
-                            <td>
-                              {item.emailSent ? (
-                                <span className="dash-tag" style={{ background: 'rgba(16, 185, 129, 0.08)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
-                                  ✓ Delivered
-                                </span>
-                              ) : (
-                                <span className="dash-tag" style={{ background: 'rgba(239, 68, 68, 0.08)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.15)' }}>
-                                  ✗ Failed
-                                </span>
-                              )}
                             </td>
                             <td>
                               <button className="btn-archive" onClick={() => handleDeleteBooking(item._id)}>
